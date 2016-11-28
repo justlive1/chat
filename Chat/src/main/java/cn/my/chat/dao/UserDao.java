@@ -12,8 +12,11 @@ public interface UserDao {
 	int save(User user);
 
 	@Select("select count(1) from users where name=#{name} and password=#{password}")
-	int auth(@Param("name") String name, @Param("password") String password);
+	boolean auth(@Param("name") String name, @Param("password") String password);
 
 	@Select("select * from users where id=#{id}")
 	User findById(Long id);
+	
+	@Select("select count(1) from users where name=#{name}")
+	boolean isExistForName(String name);
 }

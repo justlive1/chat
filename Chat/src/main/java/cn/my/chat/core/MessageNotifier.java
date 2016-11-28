@@ -9,10 +9,10 @@ import cn.my.chat.model.Message;
 @Component
 public class MessageNotifier {
 
-	@EventListener(classes=Message.class)
+	@EventListener(classes = Message.class)
 	@Async
-	public void send(Message msg){
-		
+	public void send(Message msg) {
+
 		System.out.println(msg);
 	}
 }
