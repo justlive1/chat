@@ -21,28 +21,27 @@ configurations {
 }
 
 dependencies {
-
 	//utils
-    compile  'org.projectlombok:lombok:1.16.6'
-    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+	compile  'org.projectlombok:lombok:1.16.6'
+	compile group: 'com.google.guava', name: 'guava', version: '19.0'
 
-    //jackson
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.8.3'
-
+	//jackson
+	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.8.3'
+	
 	//datasource
 	compile group: 'com.h2database', name: 'h2', version: '1.4.193'
 	compile 'org.mybatis:mybatis:3.3.0'
 	compile 'org.mybatis:mybatis-spring:1.2.4'
-
-    //spring
-    compile group: 'org.springframework', name: 'spring-context-support', version: spring_version
-    compile group: 'org.springframework', name: 'spring-jdbc', version: spring_version
+	
+	//spring
+	compile group: 'org.springframework', name: 'spring-context-support', version: spring_version
+	compile group: 'org.springframework', name: 'spring-jdbc', version: spring_version
 	compile group: 'org.springframework', name: 'spring-aspects', version: spring_version
 
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '1.4.1.RELEASE'
 
-    compile("org.springframework.boot:spring-boot-devtools:1.4.1.RELEASE")
-    testCompile("org.springframework.boot:spring-boot-starter-test:1.4.1.RELEASE")
+	compile("org.springframework.boot:spring-boot-devtools:1.4.1.RELEASE")
+	testCompile("org.springframework.boot:spring-boot-starter-test:1.4.1.RELEASE")
 
 }
 
