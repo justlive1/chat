@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import cn.my.chat.dao.UserDao;
+import cn.my.chat.service.AccountService;
 import cn.my.chat.service.MessageService;
 
 @SpringBootApplication(scanBasePackages={"cn.my.chat"})
@@ -18,11 +18,12 @@ public class Application {
 		
 		ApplicationContext ctx = SpringApplication.run(Application.class, args);
 		
-		UserDao userDao = ctx.getBean(UserDao.class);
+		AccountService accountService = ctx.getBean(AccountService.class);
 		
-		System.out.println(userDao.findById(1l));
+		accountService.login("user", "password");
+		accountService.login("Hello", "world");
 		
-		ctx.getBean(MessageService.class).sendToOne("from", "to", "msg");
+		ctx.getBean(MessageService.class).sendToOne("user", "Hello", "msg");
 		
 	}
 }

@@ -6,6 +6,12 @@ import org.springframework.stereotype.Component;
 
 import cn.my.chat.model.Message;
 
+/**
+ * 消息通知
+ * @author WB
+ *
+ */
+
 @Component
 public class MessageNotifier {
 

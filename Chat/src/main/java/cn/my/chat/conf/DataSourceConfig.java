@@ -11,6 +11,13 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+/**
+ * dataSource配置类<br>
+ * 用于配置数据源、mybatis、事务
+ * @author WB
+ *
+ */
+
 @Configuration
 @MapperScan("cn.my.chat.dao")
 public class DataSourceConfig {

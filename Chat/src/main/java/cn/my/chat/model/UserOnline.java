@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 消息发送实体
+ * 在线用户缓存对象
  * @author WB
  *
  */
@@ -13,20 +13,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Message {
+public class UserOnline {
 
 	/**
-	 * 消息发送者
+	 * 用户名
 	 */
-	private String from;
-	/**
-	 * 消息接收者
-	 */
-	private UserOnline user;
-	/**
-	 * 消息
-	 */
-	private String msg;
+	private String name;
 	
-	
+	//TODO 保存连接
 }
