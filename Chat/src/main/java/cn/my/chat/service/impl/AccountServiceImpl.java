@@ -10,6 +10,7 @@ import org.springframework.util.DigestUtils;
 
 import com.google.common.base.Charsets;
 
+import cn.my.chat.conf.CacheMangagerConfig;
 import cn.my.chat.dao.UserDao;
 import cn.my.chat.exception.AuthFailedExcetion;
 import cn.my.chat.exception.NameExistException;
@@ -18,43 +19,43 @@ import cn.my.chat.model.UserOnline;
 import cn.my.chat.service.AccountService;
 
 @Service
-@CacheConfig(cacheNames="onlines")
-public class AccountServiceImpl implements AccountService{
+@CacheConfig(cacheNames = CacheMangagerConfig.ONLINES)
+public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	UserDao userDao;
-	
+
 	@Transactional
 	@Override
 	public void register(String name, String password) {
-		//检查name是否重复
+		// 检查name是否重复
 		boolean isExist = userDao.isExistForName(name);
-		if(isExist){
+		if (isExist) {
 			throw new NameExistException();
 		}
-		//保存账号
+		// 保存账号
 		String pwd = DigestUtils.md5DigestAsHex(password.getBytes(Charsets.UTF_8));
-		userDao.save(new User(name,pwd));
+		userDao.save(new User(name, pwd));
 	}
 
-	@Cacheable(key="#name")
+	@Cacheable(key = "#name")
 	@Override
 	public UserOnline login(String name, String password) {
-		//验证账号
+		// 验证账号
 		String pwd = DigestUtils.md5DigestAsHex(password.getBytes(Charsets.UTF_8));
 		boolean authed = userDao.auth(name, pwd);
-		
-		if(!authed){
+
+		if (!authed) {
 			throw new AuthFailedExcetion();
 		}
-		
+
 		return new UserOnline(name);
 	}
 
-	@CacheEvict(key="#name")
+	@CacheEvict(key = "#name")
 	@Override
 	public void logout(String name) {
-		//TODO do something before user logout
+		// TODO do something before user logout
 	}
 
 }
