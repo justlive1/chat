@@ -1,7 +1,6 @@
 package cn.my.chat.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,8 +23,6 @@ public class AccountServiceImpl implements AccountService{
 
 	@Autowired
 	UserDao userDao;
-	@Autowired
-	CacheManager cacheManager;
 	
 	@Transactional
 	@Override
