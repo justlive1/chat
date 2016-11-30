@@ -49,6 +49,7 @@ public class MessageServiceImpl implements ApplicationEventPublisherAware, Messa
 		UserOnline toUser = getCache(to);
 
 		if (toUser == null) {
+			logger.warn("消息接收用户[{}]不在线", from);
 			throw new UserNotOnlineException();
 		}
 

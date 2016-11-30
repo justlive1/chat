@@ -1,7 +1,5 @@
 package cn.my.chat.service;
 
-import cn.my.chat.model.UserOnline;
-
 /**
  * 账户服务<br>
  * 包括注册、登陆、登出功能
@@ -23,7 +21,7 @@ public interface AccountService {
 	 * @param password
 	 * @return
 	 */
-	UserOnline login(String name, String password);
+	boolean login(String name, String password);
 	
 	/**
 	 * 登出
