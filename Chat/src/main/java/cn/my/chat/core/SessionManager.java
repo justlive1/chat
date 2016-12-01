@@ -7,7 +7,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import cn.my.chat.conf.CacheMangagerConfig;
-import cn.my.chat.exception.AuthFailedExcetion;
+import cn.my.chat.exception.ErrorCodes;
+import cn.my.chat.exception.Exceptions;
 import cn.my.chat.model.User;
 import cn.my.chat.model.UserOnline;
 import cn.my.chat.service.AccountService;
@@ -40,7 +41,7 @@ public class SessionManager {
 		boolean authed = accountService.login(user.getName(), user.getPassword());
 
 		if (!authed) {
-			throw new AuthFailedExcetion();
+			throw Exceptions.fail(ErrorCodes.AUTHFAILD);
 		}
 
 		return new UserOnline(user.getName(), socket);

@@ -8,7 +8,8 @@ import org.springframework.util.DigestUtils;
 import com.google.common.base.Charsets;
 
 import cn.my.chat.dao.UserDao;
-import cn.my.chat.exception.NameExistException;
+import cn.my.chat.exception.ErrorCodes;
+import cn.my.chat.exception.Exceptions;
 import cn.my.chat.model.User;
 import cn.my.chat.service.AccountService;
 
@@ -24,7 +25,7 @@ public class AccountServiceImpl implements AccountService {
 		// 检查name是否重复
 		boolean isExist = userDao.isExistForName(name);
 		if (isExist) {
-			throw new NameExistException();
+			throw Exceptions.fail(ErrorCodes.NAMEEXIST);
 		}
 		// 保存账号
 		String pwd = DigestUtils.md5DigestAsHex(password.getBytes(Charsets.UTF_8));

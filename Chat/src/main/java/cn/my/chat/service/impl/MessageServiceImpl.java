@@ -10,7 +10,8 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
 
 import cn.my.chat.conf.CacheMangagerConfig;
-import cn.my.chat.exception.UserNotOnlineException;
+import cn.my.chat.exception.ErrorCodes;
+import cn.my.chat.exception.Exceptions;
 import cn.my.chat.model.Message;
 import cn.my.chat.model.UserOnline;
 import cn.my.chat.service.MessageService;
@@ -50,7 +51,7 @@ public class MessageServiceImpl implements ApplicationEventPublisherAware, Messa
 
 		if (toUser == null) {
 			logger.warn("消息接收用户[{}]不在线", from);
-			throw new UserNotOnlineException();
+			throw Exceptions.fail(ErrorCodes.USERNOTONLINE);
 		}
 
 		publisher.publishEvent(new Message(from, toUser, msg));
