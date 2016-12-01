@@ -44,27 +44,33 @@ public class ConnectHandler implements Handler<NetSocket> {
 
 		socket.handler(buffer -> {
 			
+			ClientData.OPTIONS opt = null;
+			
 			try {
 				
 				String data = buffer.getString(0, buffer.length());
 				ClientData resp = Json.decodeValue(data, ClientData.class);
-
-				ClientData.OPTIONS opt;
 
 				if (resp.getOption() == null || (opt = ClientData.OPTIONS.valueOf(resp.getOption())) == null) {
 					socket.write(optsHandler.result(ErrorCodes.UNKNOWOPTS)).end();
 					return;
 				}
 				
+				ThreadStorage.set(opt.name());
 				String decodeData = RSAUtil.decode(resp.getContent(), privateKey);
 				
-				ThreadStorage.set(opt.name());
 				optsHandler.handler(socket, opt, decodeData);
 
 			} catch (CodedException e) {
-				socket.write(optsHandler.result(e)).end();
+				socket.write(optsHandler.result(e));
+				if(ClientData.OPTIONS.isClosed(opt)){
+					socket.end();
+				}
 			} catch (DecodeException e){
-				socket.write(optsHandler.result(ErrorCodes.ILEGALDATA)).end();
+				socket.write(optsHandler.result(ErrorCodes.ILEGALDATA));
+				if(ClientData.OPTIONS.isClosed(opt)){
+					socket.end();
+				}
 			} catch (Exception e){
 				logger.error("处理异常",e);
 				socket.write(optsHandler.result(ErrorCodes.SYSTEMERROR)).end();

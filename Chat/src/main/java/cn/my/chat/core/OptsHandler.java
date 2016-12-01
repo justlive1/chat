@@ -10,9 +10,12 @@ import cn.my.chat.exception.ErrorCode;
 import cn.my.chat.exception.ErrorCodes;
 import cn.my.chat.exception.Exceptions;
 import cn.my.chat.model.ClientData.OPTIONS;
+import cn.my.chat.model.MessageData;
 import cn.my.chat.model.ServerData;
 import cn.my.chat.model.User;
+import cn.my.chat.model.UserOnline;
 import cn.my.chat.service.AccountService;
+import cn.my.chat.service.MessageService;
 import cn.my.chat.util.RSAUtil;
 import cn.my.chat.util.ThreadStorage;
 import io.vertx.core.json.Json;
@@ -32,7 +35,10 @@ public class OptsHandler {
 	SessionManager sessionManager;
 	@Autowired
 	AccountService accountService;
-
+	@Autowired
+	MessageService messageService;
+	
+	
 	@Value("${rsa.server.publicKey}")
 	private String publicKey;
 	@Value("${chat.version}")
@@ -56,7 +62,7 @@ public class OptsHandler {
 			login(socket, content);
 			break;
 		case SENDTOONE:
-			// TODO
+			sendToOne(socket, content);
 			break;
 		case SNDTOALL:
 			// TODO
@@ -66,34 +72,49 @@ public class OptsHandler {
 		}
 	}
 
-	private void register(NetSocket socket, String content){
-	
+	private void register(NetSocket socket, String content) {
+
 		User user = Json.decodeValue(content, User.class);
-		
-		if(user == null || StringUtils.isEmpty(user.getName()) || StringUtils.isEmpty(user.getPassword())){
+
+		if (user == null || StringUtils.isEmpty(user.getName()) || StringUtils.isEmpty(user.getPassword())) {
 			throw Exceptions.fail(ErrorCodes.ILEGALARGS);
 		}
-		
+
 		accountService.register(user.getName(), user.getPassword());
-		
+
 		ServerData data = new ServerData();
 		data.setVersion(version);
 		data.setOption(OPTIONS.REG.name());
-		
+
 		socket.write(Json.encode(data));
 	}
-	
+
 	private void login(NetSocket socket, String content) {
 
 		User user = Json.decodeValue(content, User.class);
 
+		if (user == null || StringUtils.isEmpty(user.getName()) || StringUtils.isEmpty(user.getPassword())) {
+			throw Exceptions.fail(ErrorCodes.ILEGALARGS);
+		}
+
 		sessionManager.connected(socket, user);
-		
+
 		ServerData data = new ServerData();
 		data.setVersion(version);
 		data.setOption(OPTIONS.LOGIN.name());
-		
+
 		socket.write(Json.encode(data));
+		
+	}
+
+	private void sendToOne(NetSocket socket, String content) {
+
+		MessageData message = Json.decodeValue(content, MessageData.class);
+
+		sessionManager.checkOnline(message.getFrom());
+		UserOnline to = sessionManager.checkOnline(message.getTo());
+		
+		messageService.sendToOne(message.getFrom(), to, message.getMsg());
 	}
 
 	public String result(CodedException e) {
@@ -107,7 +128,7 @@ public class OptsHandler {
 
 		ServerData data = new ServerData(version, e.getCode(), e.getMsg());
 		data.setOption(ThreadStorage.get());
-		
+
 		return Json.encode(data);
 	}
 

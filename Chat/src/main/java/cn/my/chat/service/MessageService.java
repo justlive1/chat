@@ -1,5 +1,7 @@
 package cn.my.chat.service;
 
+import cn.my.chat.model.UserOnline;
+
 /**
  * 消息发送<br>
  * 用于处理用户向指定用户或所有人发送消息
@@ -14,7 +16,7 @@ public interface MessageService {
 	 * @param to
 	 * @param msg
 	 */
-	void sendToOne(String from, String to, String msg);
+	void sendToOne(String from, UserOnline to, String msg);
 	
 	/**
 	 * 向所有用户发送消息
