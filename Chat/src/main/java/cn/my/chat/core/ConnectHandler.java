@@ -18,8 +18,10 @@ import io.vertx.core.net.NetSocket;
 
 /**
  * socket连接处理<br>
- * 1.验证账户信息<br>
- * 2.保存用户连接
+ * 1.连接的建立
+ * 2.最外层数据接收解析<br>
+ * 3.连接断开的处理
+ * 4.数据读取异常处理
  * 
  * @author WB
  *
