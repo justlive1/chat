@@ -3,12 +3,16 @@ package cn.my.chat.core;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import cn.my.chat.exception.CodedException;
 import cn.my.chat.exception.ErrorCode;
+import cn.my.chat.exception.ErrorCodes;
+import cn.my.chat.exception.Exceptions;
 import cn.my.chat.model.ClientData.OPTIONS;
 import cn.my.chat.model.ServerData;
 import cn.my.chat.model.User;
+import cn.my.chat.service.AccountService;
 import cn.my.chat.util.RSAUtil;
 import cn.my.chat.util.ThreadStorage;
 import io.vertx.core.json.Json;
@@ -26,6 +30,8 @@ public class OptsHandler {
 
 	@Autowired
 	SessionManager sessionManager;
+	@Autowired
+	AccountService accountService;
 
 	@Value("${rsa.server.publicKey}")
 	private String publicKey;
@@ -44,7 +50,7 @@ public class OptsHandler {
 
 		switch (opt) {
 		case REG:
-			// TODO
+			register(socket, content);
 			break;
 		case LOGIN:
 			login(socket, content);
@@ -60,11 +66,34 @@ public class OptsHandler {
 		}
 	}
 
+	private void register(NetSocket socket, String content){
+	
+		User user = Json.decodeValue(content, User.class);
+		
+		if(user == null || StringUtils.isEmpty(user.getName()) || StringUtils.isEmpty(user.getPassword())){
+			throw Exceptions.fail(ErrorCodes.ILEGALARGS);
+		}
+		
+		accountService.register(user.getName(), user.getPassword());
+		
+		ServerData data = new ServerData();
+		data.setVersion(version);
+		data.setOption(OPTIONS.REG.name());
+		
+		socket.write(Json.encode(data));
+	}
+	
 	private void login(NetSocket socket, String content) {
 
 		User user = Json.decodeValue(content, User.class);
 
 		sessionManager.connected(socket, user);
+		
+		ServerData data = new ServerData();
+		data.setVersion(version);
+		data.setOption(OPTIONS.LOGIN.name());
+		
+		socket.write(Json.encode(data));
 	}
 
 	public String result(CodedException e) {

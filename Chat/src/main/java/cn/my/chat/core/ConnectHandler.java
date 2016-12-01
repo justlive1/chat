@@ -64,7 +64,7 @@ public class ConnectHandler implements Handler<NetSocket> {
 			} catch (CodedException e) {
 				socket.write(optsHandler.result(e)).end();
 			} catch (DecodeException e){
-				socket.write(optsHandler.result(ErrorCodes.IEGALDATA)).end();
+				socket.write(optsHandler.result(ErrorCodes.ILEGALDATA)).end();
 			} catch (Exception e){
 				logger.error("处理异常",e);
 				socket.write(optsHandler.result(ErrorCodes.SYSTEMERROR)).end();

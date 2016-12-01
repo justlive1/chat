@@ -186,7 +186,7 @@ public class RSAUtil {
 			RSAPrivateKey key = getPrivateKeyFromString(privateKey);
 			return decrypt(source, key);
 		} catch (Exception e) {
-			throw Exceptions.fail(ErrorCodes.IEGALDATA);
+			throw Exceptions.fail(ErrorCodes.ILEGALDATA);
 		}
 	}
 
@@ -195,7 +195,7 @@ public class RSAUtil {
 			RSAPublicKey key = getPublicKeyFromString(publicKey);
 			return encrypt(source, key);
 		} catch (Exception e) {
-			throw Exceptions.fail(ErrorCodes.IEGALDATA);
+			throw Exceptions.fail(ErrorCodes.ILEGALDATA);
 		}
 	}
 }
