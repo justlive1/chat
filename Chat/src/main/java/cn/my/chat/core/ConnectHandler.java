@@ -18,9 +18,9 @@ import io.vertx.core.net.NetSocket;
 
 /**
  * socket连接处理<br>
- * 1.连接的建立
+ * 1.连接的建立<br>
  * 2.最外层数据接收解析<br>
- * 3.连接断开的处理
+ * 3.连接断开的处理<br>
  * 4.数据读取异常处理
  * 
  * @author WB
