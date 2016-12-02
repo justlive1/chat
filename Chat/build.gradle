@@ -34,6 +34,8 @@ dependencies {
 	
 	//datasource
 	compile group: 'com.h2database', name: 'h2', version: '1.4.193'
+	compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.5'
+	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
 	compile 'org.mybatis:mybatis:3.3.0'
 	compile 'org.mybatis:mybatis-spring:1.2.4'
 	
@@ -44,7 +46,6 @@ dependencies {
 
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '1.4.1.RELEASE'
 
-	compile("org.springframework.boot:spring-boot-devtools:1.4.1.RELEASE")
 	testCompile("org.springframework.boot:spring-boot-starter-test:1.4.1.RELEASE")
 
 }

@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -22,7 +23,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @MapperScan("cn.my.chat.dao")
 public class DataSourceConfig {
 
-	@Bean("h2DataSource")
+	@Bean
 	@Profile("dev")
 	public DataSource h2DataSource() {
 
@@ -33,6 +34,13 @@ public class DataSourceConfig {
 				.addScript("/config/schema.sql")
 				.addScript("/config/init-data.sql")
 				.build();
+	}
+	
+	@Bean
+	@Profile("pro")
+	public DataSource mysqlDataSource(DataSourceProperties properties){
+		
+		return properties.initializeDataSourceBuilder().build();
 	}
 	
 	@Bean(initMethod = "afterPropertiesSet")
