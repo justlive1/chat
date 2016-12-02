@@ -5,13 +5,15 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 
 /**
- * 缓存配置类
+ * 缓存配置类<br>
+ * dev环境下使用caffeine缓存<br>
+ * pro环境下则有spring boot自动创建redis缓存
  * 
  * @author WB
  *
@@ -22,15 +24,14 @@ import com.github.benmanes.caffeine.cache.RemovalCause;
 public class CacheMangagerConfig {
 
 	public static final String ONLINES = "onlines";
-	
+
 	@Bean
-	@Primary
+	@Profile("dev")
 	public CacheManager caffeineCacheManager() {
 
 		CaffeineCacheManager cacheManager = new CaffeineCacheManager();
 
-		Caffeine<Object, Object> caffeine = Caffeine.newBuilder()
-				.maximumSize(Integer.MAX_VALUE)
+		Caffeine<Object, Object> caffeine = Caffeine.newBuilder().maximumSize(Integer.MAX_VALUE)
 				.removalListener((key, graph, cause) -> {
 					if (RemovalCause.EXPLICIT.equals(cause)) {
 						// TODO do something when cache removed by user
