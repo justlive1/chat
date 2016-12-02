@@ -28,14 +28,14 @@ public class AppCoreConfig {
 	}
 	
 	@Bean
-	@Profile("dev")
+	@Profile("single")
 	public MessageService springMessageService(){
 		
 		return new MessageServiceImpl();
 	}
 	
 	@Bean
-	@Profile("dev")
+	@Profile("single")
 	public NotifierService springNotifierService(){
 		
 		return new NotifierServiceImpl();

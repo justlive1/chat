@@ -15,7 +15,7 @@ import io.vertx.core.json.Json;
 
 /**
  * 消息通知<br>
- * Spring事件传播的通知类<br>
+ * 单机模式下Spring事件传播的通知类<br>
  * 异步发送用户消息
  * @author WB
  *
