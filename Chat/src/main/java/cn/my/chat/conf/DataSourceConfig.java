@@ -24,7 +24,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 public class DataSourceConfig {
 
 	@Bean
-	@Profile("dev")
+	@Profile("h2")
 	public DataSource h2DataSource() {
 
 		return new EmbeddedDatabaseBuilder()
@@ -37,7 +37,7 @@ public class DataSourceConfig {
 	}
 	
 	@Bean
-	@Profile("pro")
+	@Profile("mysql")
 	public DataSource mysqlDataSource(DataSourceProperties properties){
 		
 		return properties.initializeDataSourceBuilder().build();
