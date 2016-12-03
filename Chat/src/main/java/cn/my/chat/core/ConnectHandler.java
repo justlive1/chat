@@ -50,7 +50,7 @@ public class ConnectHandler implements Handler<NetSocket> {
 	public void handle(NetSocket socket) {
 
 		socket.handler(buffer -> {
-			System.out.println(socket.writeHandlerID());
+
 			ClientData.OPTIONS opt = null;
 
 			try {
