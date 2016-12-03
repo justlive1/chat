@@ -2,11 +2,11 @@ package cn.my.chat.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 
 import cn.my.chat.conf.CacheMangagerConfig;
@@ -15,7 +15,7 @@ import cn.my.chat.exception.Exceptions;
 import cn.my.chat.model.User;
 import cn.my.chat.model.UserOnline;
 import cn.my.chat.service.AccountService;
-import io.vertx.core.net.NetSocket;
+import io.vertx.core.eventbus.EventBus;
 
 /**
  * 用户会话管理
@@ -32,6 +32,9 @@ public class SessionManager {
 
 	@Autowired
 	CacheManager cacheManager;
+	
+	@Autowired
+	EventBus eventBust;
 
 	/**
 	 * 用户连接成功<br>
@@ -41,8 +44,8 @@ public class SessionManager {
 	 * @param user
 	 * @return
 	 */
-	@Caching(cacheable = { @Cacheable(key = "#socket"), @Cacheable(key = "#user.name") })
-	public UserOnline connected(NetSocket socket, User user) {
+	@Cacheable(key = "#handlerId")
+	public UserOnline connected(String handlerId, User user) {
 
 		boolean authed = accountService.login(user.getName(), user.getPassword());
 
@@ -50,7 +53,16 @@ public class SessionManager {
 			throw Exceptions.fail(ErrorCodes.AUTHFAILD);
 		}
 
-		return new UserOnline(user.getName(), socket);
+		UserOnline userOnline =  new UserOnline(user.getName(), handlerId);
+		
+		ValueWrapper exist = cacheManager.getCache(CacheMangagerConfig.ONLINES).putIfAbsent(user.getName(), userOnline);
+		
+		if(exist != null){
+			UserOnline lastUser = (UserOnline)exist.get();
+			closedExistingUser(lastUser.getHandlerId());
+		}
+		
+		return userOnline;
 	}
 
 	/**
@@ -59,17 +71,19 @@ public class SessionManager {
 	 * 
 	 * @param socket
 	 */
-	@CacheEvict(key = "#socket")
-	public void closed(NetSocket socket) {
+	@CacheEvict(key = "#handlerId")
+	public void closed(String handlerId) {
 
 		Cache cache = cacheManager.getCache(CacheMangagerConfig.ONLINES);
 		UserOnline user;
 
-		if (cache == null || (user = cache.get(socket, UserOnline.class)) == null) {
+		if (cache == null || (user = cache.get(handlerId, UserOnline.class)) == null) {
 			return;
 		}
 
-		cache.evict(user.getName());
+		if(handlerId.equals(user.getHandlerId())){
+			cache.evict(user.getName());
+		}
 	}
 
 	public UserOnline checkOnline(String name) {
@@ -82,6 +96,10 @@ public class SessionManager {
 		}
 
 		return user;
+	}
+	
+	private void closedExistingUser(String handlerId){
+		eventBust.send(handlerId+"_closed", ErrorCodes.LOGINONCEMORE);
 	}
 
 }

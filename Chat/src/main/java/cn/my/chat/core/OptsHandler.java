@@ -38,7 +38,6 @@ public class OptsHandler {
 	@Autowired
 	MessageService messageService;
 	
-	
 	@Value("${rsa.server.publicKey}")
 	private String publicKey;
 	@Value("${chat.version}")
@@ -97,7 +96,7 @@ public class OptsHandler {
 			throw Exceptions.fail(ErrorCodes.ILEGALARGS);
 		}
 
-		sessionManager.connected(socket, user);
+		sessionManager.connected(socket.writeHandlerID(), user);
 
 		ServerData data = new ServerData();
 		data.setVersion(version);
@@ -111,7 +110,10 @@ public class OptsHandler {
 
 		MessageData message = Json.decodeValue(content, MessageData.class);
 
-		sessionManager.checkOnline(message.getFrom());
+		UserOnline from = sessionManager.checkOnline(socket.writeHandlerID());
+		if(!from.getName().equals(message.getFrom())){
+			throw Exceptions.fail(ErrorCodes.ILEGALOPTS);
+		}
 		UserOnline to = sessionManager.checkOnline(message.getTo());
 		
 		messageService.sendToOne(message.getFrom(), to, message.getMsg());

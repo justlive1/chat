@@ -1,6 +1,5 @@
 package cn.my.chat.model;
 
-import io.vertx.core.net.NetSocket;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +20,6 @@ public class UserOnline {
 	 */
 	private String name;
 	
-	// 保存连接
-	private NetSocket socket;
+	// 连接id
+	private String handlerId;
 }

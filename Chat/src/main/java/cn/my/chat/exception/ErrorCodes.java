@@ -17,5 +17,7 @@ public class ErrorCodes {
 	public static final ErrorCode USERNOTONLINE = Exceptions.errorMessage(MODULE, "00004", "用户不在线");
 	public static final ErrorCode ILEGALDATA = Exceptions.errorMessage(MODULE, "00005", "数据格式异常");
 	public static final ErrorCode UNKNOWOPTS = Exceptions.errorMessage(MODULE, "00006", "未知操作");
+	public static final ErrorCode ILEGALOPTS = Exceptions.errorMessage(MODULE, "00007", "异常操作");
+	public static final ErrorCode LOGINONCEMORE = Exceptions.errorMessage(MODULE, "00008", "账号在另一地点登陆");
 	
 }

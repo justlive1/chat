@@ -1,5 +1,6 @@
 package cn.my.chat.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -11,6 +12,8 @@ import cn.my.chat.model.ServerData;
 import cn.my.chat.model.UserOnline;
 import cn.my.chat.service.NotifierService;
 import cn.my.chat.util.RSAUtil;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.Json;
 
 /**
@@ -29,6 +32,10 @@ public class NotifierServiceImpl implements NotifierService{
 	@Value("${rsa.server.publicKey}")
 	private String publicKey;
 	
+	@Autowired
+	EventBus eventBus;
+	
+	
 	@EventListener(classes = Message.class)
 	@Async
 	@Override
@@ -44,6 +51,6 @@ public class NotifierServiceImpl implements NotifierService{
 		String encodeData = RSAUtil.encode(Json.encode(message), publicKey);
 		data.setContent(encodeData);
 		
-		user.getSocket().write(Json.encode(data));
+		eventBus.send(user.getHandlerId(), Buffer.buffer(Json.encode(data)));
 	}
 }

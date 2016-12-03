@@ -34,8 +34,11 @@ public class CacheMangagerConfig {
 		Caffeine<Object, Object> caffeine = Caffeine.newBuilder().maximumSize(Integer.MAX_VALUE)
 				.removalListener((key, graph, cause) -> {
 					if (RemovalCause.EXPLICIT.equals(cause)) {
-						// TODO do something when cache removed by user
+						// TODO do something when user disconnected
 						System.out.printf("Key %s was removed and value was [%s]%n", key, graph);
+					}else if(RemovalCause.REPLACED.equals(cause)){
+						// TODO do something when user login again
+						System.out.printf("Key %s was replaced and value was [%s]%n", key, graph);
 					}
 				});
 
