@@ -9,7 +9,7 @@ import cn.my.chat.exception.CodedException;
 import cn.my.chat.exception.ErrorCode;
 import cn.my.chat.exception.ErrorCodes;
 import cn.my.chat.exception.Exceptions;
-import cn.my.chat.model.ClientData.OPTIONS;
+import cn.my.chat.model.Constants.OPTIONS;
 import cn.my.chat.model.MessageData;
 import cn.my.chat.model.ServerData;
 import cn.my.chat.model.User;

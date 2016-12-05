@@ -10,6 +10,7 @@ import cn.my.chat.exception.CodedException;
 import cn.my.chat.exception.ErrorCode;
 import cn.my.chat.exception.ErrorCodes;
 import cn.my.chat.model.ClientData;
+import cn.my.chat.model.Constants;
 import cn.my.chat.util.RSAUtil;
 import cn.my.chat.util.ThreadStorage;
 import io.vertx.core.Handler;
@@ -51,14 +52,14 @@ public class ConnectHandler implements Handler<NetSocket> {
 
 		socket.handler(buffer -> {
 
-			ClientData.OPTIONS opt = null;
+			Constants.OPTIONS opt = null;
 
 			try {
 
 				String data = buffer.getString(0, buffer.length());
 				ClientData resp = Json.decodeValue(data, ClientData.class);
 
-				if (resp.getOption() == null || (opt = ClientData.OPTIONS.valueOf(resp.getOption())) == null) {
+				if (resp.getOption() == null || (opt = Constants.OPTIONS.valueOf(resp.getOption())) == null) {
 					socket.write(optsHandler.result(ErrorCodes.UNKNOWOPTS)).end();
 					return;
 				}
@@ -70,12 +71,12 @@ public class ConnectHandler implements Handler<NetSocket> {
 
 			} catch (CodedException e) {
 				socket.write(optsHandler.result(e));
-				if (ClientData.OPTIONS.isClosed(opt)) {
+				if (Constants.OPTIONS.isClosed(opt)) {
 					socket.end();
 				}
 			} catch (DecodeException e) {
 				socket.write(optsHandler.result(ErrorCodes.ILEGALDATA));
-				if (ClientData.OPTIONS.isClosed(opt)) {
+				if (Constants.OPTIONS.isClosed(opt)) {
 					socket.end();
 				}
 			} catch (Exception e) {

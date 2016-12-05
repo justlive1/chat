@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 
-import cn.my.chat.model.ClientData;
+import cn.my.chat.model.Constants;
 import cn.my.chat.model.Message;
 import cn.my.chat.model.MessageData;
 import cn.my.chat.model.ServerData;
@@ -45,7 +45,7 @@ public class NotifierServiceImpl implements NotifierService{
 		
 		ServerData data = new ServerData();
 		data.setVersion(version);
-		data.setOption(ClientData.OPTIONS.SENDTOONE.name());
+		data.setOption(Constants.OPTIONS.SENDTOONE.name());
 		
 		MessageData message = new MessageData(msg.getFrom(),user.getName(),msg.getMsg());
 		String encodeData = RSAUtil.encode(Json.encode(message), publicKey);
