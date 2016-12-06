@@ -1,4 +1,4 @@
-package cn.my.chat.model;
+package cn.my.chatclient.model;
 
 /**
  * 常量类
