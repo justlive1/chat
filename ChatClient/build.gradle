@@ -1,0 +1,42 @@
+group 'cn.my'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: "eclipse"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+repositories {
+	maven { url "http://maven.aliyun.com/nexus/content/groups/public/"}
+	maven { url "http://repo.spring.io/snapshot"}
+	maven { url "http://repo.spring.io/milestone"}
+}
+
+def spring_version = '5.0.0.M3'
+
+configurations {
+	all*.exclude group: 'commons-logging'
+}
+
+dependencies {
+	//utils
+	compile  'org.projectlombok:lombok:1.16.6'
+	compile group: 'com.google.guava', name: 'guava', version: '20.0'
+	
+	compile group: 'io.vertx', name: 'vertx-core', version: '3.3.3'
+	
+	//jackson
+	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.8.3'
+	
+	
+	//spring
+	compile group: 'org.springframework', name: 'spring-context-support', version: spring_version
+
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '1.4.1.RELEASE'
+
+	testCompile("org.springframework.boot:spring-boot-starter-test:1.4.1.RELEASE")
+
+}
+
