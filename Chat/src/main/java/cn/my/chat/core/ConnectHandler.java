@@ -94,7 +94,7 @@ public class ConnectHandler implements Handler<NetSocket> {
 		});
 
 		// 注册异地登陆监听
-		eventBus.<ErrorCode> localConsumer(socket.writeHandlerID() + "_closed").handler(msg -> {
+		eventBus.<ErrorCode> consumer(socket.writeHandlerID() + "_closed").handler(msg -> {
 			socket.write(optsHandler.result(msg.body())).end();
 		});
 	}
