@@ -15,8 +15,7 @@ import cn.my.chatclient.model.ServerData;
 @Component
 public class OptsHandler {
 
-	
-	/**	
+	/**
 	 * 处理收到的消息
 	 * 
 	 * @param opt
@@ -26,6 +25,39 @@ public class OptsHandler {
 	 */
 	public void handler(OPTIONS opt, ServerData content) {
 
+		switch (opt) {
+		case LOGIN:
+			login(content);
+			break;
+		case REG:
+			register(content);
+			break;
+		case SENDTOONE:
+			sendToOne(content);
+			break;
+		case SNDTOALL:
+			sendToAll(content);
+			break;
+		default:
+			break;
+		}
 
 	}
+
+	private void login(ServerData content) {
+
+	}
+
+	private void register(ServerData content) {
+
+	}
+
+	private void sendToOne(ServerData content) {
+
+	}
+
+	private void sendToAll(ServerData content) {
+
+	}
+
 }
