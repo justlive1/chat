@@ -28,7 +28,11 @@ public class VertxManager {
 	@Autowired
 	Handler<Buffer> connecHandler;
 
-	public NetClient client() {
+	public void client() {
+		
+		if(value.isPresent()){
+			return;
+		}
 
 		NetClient client = vertx.createNetClient();
 
@@ -59,7 +63,6 @@ public class VertxManager {
 
 		});
 
-		return client;
 	}
 
 	public void send(String msg) {

@@ -8,6 +8,8 @@ package cn.my.chat.model;
  */
 public class Constants {
 
+	public static final String SEPARATE = ">_<";
+	
 	/**
 	 * 操作码枚举
 	 */

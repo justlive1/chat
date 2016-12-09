@@ -1,5 +1,6 @@
 package cn.my.chatclient.model;
 
+import io.vertx.core.json.Json;
 import lombok.Data;
 
 /**
@@ -24,4 +25,9 @@ public class ClientData {
 	 * 内容
 	 */
 	private String content;
+	
+	public String toJson(){
+		String line = Json.encode(this);
+		return line + Constants.SEPARATE;
+	}
 }

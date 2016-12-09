@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import cn.my.chatclient.core.VertxManager;
 import cn.my.chatclient.model.ClientData;
+import cn.my.chatclient.model.MessageData;
 import cn.my.chatclient.model.Constants.OPTIONS;
 import cn.my.chatclient.model.User;
 import cn.my.chatclient.service.OptionsService;
@@ -35,19 +36,39 @@ public class OptionsServiceImpl implements OptionsService{
 		User user = new User(name, password);
 		data.setContent(RSAUtil.encode(Json.encode(user), publicKey));
 		
-		vertxManager.send(Json.encode(data));
+		vertxManager.send(data.toJson());
 		
 	}
 
 	@Override
 	public void register(String name, String password) {
-		// TODO Auto-generated method stub
+		
+		vertxManager.client();
+		
+		ClientData data = new ClientData();
+		data.setOption(OPTIONS.REG.name());
+		data.setVersion(version);
+		
+		User user = new User(name, password);
+		data.setContent(RSAUtil.encode(Json.encode(user), publicKey));
+		
+		vertxManager.send(data.toJson());
+		
 		
 	}
 
 	@Override
 	public void sendToOne(String from, String to, String msg) {
-		// TODO Auto-generated method stub
+		
+		ClientData data = new ClientData();
+		data.setOption(OPTIONS.SENDTOONE.name());
+		data.setVersion(version);
+		
+		MessageData message = new MessageData(from, to, msg);
+		
+		data.setContent(RSAUtil.encode(Json.encode(message), publicKey));
+		
+		vertxManager.send(data.toJson());
 		
 	}
 

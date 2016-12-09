@@ -47,7 +47,7 @@ public class OptsHandler {
 
 		if(content.failed()){
 			// TODO 提示登陆失败
-			
+			System.out.println(content);
 			return;
 		}
 		
@@ -59,7 +59,7 @@ public class OptsHandler {
 
 		if(content.failed()){
 			// TODO 提示注册失败
-			
+			System.out.println(content);
 			return;
 		}
 		
@@ -71,7 +71,7 @@ public class OptsHandler {
 
 		if(content.failed() || content.getContent() == null){
 			// TODO 提示数据接收失败 通常情况不会出现
-			
+			System.out.println(content);
 			return;
 		}
 		

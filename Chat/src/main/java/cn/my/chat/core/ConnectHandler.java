@@ -1,5 +1,7 @@
 package cn.my.chat.core;
 
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,37 +54,42 @@ public class ConnectHandler implements Handler<NetSocket> {
 
 		socket.handler(buffer -> {
 
-			Constants.OPTIONS opt = null;
+			String data = buffer.getString(0, buffer.length());
 
-			try {
+			Arrays.asList(data.split(Constants.SEPARATE)).forEach(line -> {
 
-				String data = buffer.getString(0, buffer.length());
-				ClientData resp = Json.decodeValue(data, ClientData.class);
+				Constants.OPTIONS opt = null;
 
-				if (resp.getOption() == null || (opt = Constants.OPTIONS.valueOf(resp.getOption())) == null) {
-					socket.write(optsHandler.result(ErrorCodes.UNKNOWOPTS)).end();
-					return;
+				try {
+
+					ClientData resp = Json.decodeValue(line, ClientData.class);
+
+					if (resp.getOption() == null || (opt = Constants.OPTIONS.valueOf(resp.getOption())) == null) {
+						socket.write(optsHandler.result(ErrorCodes.UNKNOWOPTS)).end();
+						return;
+					}
+
+					ThreadStorage.set(opt.name());
+					String decodeData = RSAUtil.decode(resp.getContent(), privateKey);
+
+					optsHandler.handler(socket, opt, decodeData);
+				} catch (CodedException e) {
+					socket.write(optsHandler.result(e));
+					if (Constants.OPTIONS.isClosed(opt)) {
+						socket.end();
+					}
+				} catch (DecodeException e) {
+					socket.write(optsHandler.result(ErrorCodes.ILEGALDATA));
+					if (Constants.OPTIONS.isClosed(opt)) {
+						socket.end();
+					}
+				} 
+				catch (Exception e) {
+					logger.error("处理异常", e);
+					socket.write(optsHandler.result(ErrorCodes.SYSTEMERROR)).end();
 				}
 
-				ThreadStorage.set(opt.name());
-				String decodeData = RSAUtil.decode(resp.getContent(), privateKey);
-
-				optsHandler.handler(socket, opt, decodeData);
-
-			} catch (CodedException e) {
-				socket.write(optsHandler.result(e));
-				if (Constants.OPTIONS.isClosed(opt)) {
-					socket.end();
-				}
-			} catch (DecodeException e) {
-				socket.write(optsHandler.result(ErrorCodes.ILEGALDATA));
-				if (Constants.OPTIONS.isClosed(opt)) {
-					socket.end();
-				}
-			} catch (Exception e) {
-				logger.error("处理异常", e);
-				socket.write(optsHandler.result(ErrorCodes.SYSTEMERROR)).end();
-			}
+			});
 
 		}).closeHandler(r -> {
 			// 断开连接
@@ -94,7 +101,7 @@ public class ConnectHandler implements Handler<NetSocket> {
 		});
 
 		// 注册异地登陆监听
-		eventBus.<ErrorCode> consumer(socket.writeHandlerID() + "_closed").handler(msg -> {
+		eventBus.<ErrorCode>consumer(socket.writeHandlerID() + "_closed").handler(msg -> {
 			socket.write(optsHandler.result(msg.body())).end();
 		});
 	}
