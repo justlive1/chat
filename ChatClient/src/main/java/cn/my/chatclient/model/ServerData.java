@@ -48,4 +48,12 @@ public class ServerData {
 		this.code = code;
 		this.msg = msg;
 	}
+	
+	public boolean successed(){
+		return "00000".equals(code);
+	}
+	
+	public boolean failed(){
+		return !successed();
+	}
 }

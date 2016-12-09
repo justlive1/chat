@@ -2,21 +2,21 @@ package cn.my.chatclient.util;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public final class Optional<T> {
 
-	private static final Optional<?> EMPTY = new Optional<>();
-
-	private transient volatile T value;
+	private transient CountDownLatch latch;
+	private volatile T value;
 
 	private Optional() {
 		this.value = null;
 	}
 
 	public static <T> Optional<T> empty() {
-		@SuppressWarnings("unchecked")
-		Optional<T> t = (Optional<T>) EMPTY;
-		return t;
+		return new Optional<>();
 	}
 
 	private Optional(T value) {
@@ -28,8 +28,15 @@ public final class Optional<T> {
 		return this;
 	}
 
+	public Optional<T> of(final CountDownLatch latch) {
+		this.latch = latch;
+		return this;
+	}
+
 	public void clean() {
 		this.value = null;
+		this.latch.countDown();
+		this.latch = null;
 	}
 
 	public T get() {
@@ -39,8 +46,56 @@ public final class Optional<T> {
 		return value;
 	}
 
+	public T getWaiting() throws InterruptedException {
+
+		if (latch != null) {
+			latch.await();
+		}
+
+		if (value == null) {
+			throw new NoSuchElementException("No value present");
+		}
+		return value;
+	}
+	
+	public T getWaitingUncheck() {
+
+		if (latch != null) {
+			try {
+				latch.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (value == null) {
+			throw new NoSuchElementException("No value present");
+		}
+		return value;
+	}
+
+	public T getWaiting(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
+
+		if (latch != null) {
+			boolean reached = latch.await(timeout, unit);
+			if (!reached) {
+				throw new TimeoutException();
+			}
+		}
+
+		if (value == null) {
+			throw new NoSuchElementException("No value present");
+		}
+		return value;
+	}
+
 	public boolean isPresent() {
 		return value != null;
+	}
+
+	public boolean isWaitingPresent() {
+
+		return latch != null || value != null;
 	}
 
 	@Override

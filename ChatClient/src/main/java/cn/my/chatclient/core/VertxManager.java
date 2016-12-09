@@ -1,5 +1,7 @@
 package cn.my.chatclient.core;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,6 +32,10 @@ public class VertxManager {
 
 		NetClient client = vertx.createNetClient();
 
+		final CountDownLatch latch = new CountDownLatch(1);
+		
+		value.of(latch);
+		
 		client.connect(port, host, r -> {
 
 			if (r.succeeded()) {
@@ -38,6 +44,7 @@ public class VertxManager {
 
 				if (!value.isPresent()) {
 					value.of(socket.writeHandlerID());
+					latch.countDown();
 				}
 
 				socket.handler(connecHandler).exceptionHandler(e -> {
@@ -57,8 +64,8 @@ public class VertxManager {
 
 	public void send(String msg) {
 
-		if (value.isPresent()) {
-			vertx.eventBus().send(value.get(), Buffer.buffer(msg));
+		if (value.isWaitingPresent()) {
+			vertx.eventBus().send(value.getWaitingUncheck(), Buffer.buffer(msg));
 		} else {
 			System.err.println("local storage is null");
 		}
