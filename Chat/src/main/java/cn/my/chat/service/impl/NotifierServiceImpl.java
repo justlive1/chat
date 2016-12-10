@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 
+import cn.my.chat.core.VertxManager;
 import cn.my.chat.model.Constants;
 import cn.my.chat.model.Message;
 import cn.my.chat.model.MessageData;
@@ -12,8 +13,6 @@ import cn.my.chat.model.ServerData;
 import cn.my.chat.model.UserOnline;
 import cn.my.chat.service.NotifierService;
 import cn.my.chat.util.RSAUtil;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.Json;
 
 /**
@@ -33,7 +32,7 @@ public class NotifierServiceImpl implements NotifierService{
 	private String publicKey;
 	
 	@Autowired
-	EventBus eventBus;
+	VertxManager vertxManager;
 	
 	
 	@EventListener(classes = Message.class)
@@ -51,6 +50,6 @@ public class NotifierServiceImpl implements NotifierService{
 		String encodeData = RSAUtil.encode(Json.encode(message), publicKey);
 		data.setContent(encodeData);
 		
-		eventBus.send(user.getHandlerId(), Buffer.buffer(Json.encode(data)));
+		vertxManager.send(user.getHandlerId(), Json.encode(data));
 	}
 }
