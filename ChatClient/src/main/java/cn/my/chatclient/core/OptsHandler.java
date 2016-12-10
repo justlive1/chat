@@ -29,10 +29,10 @@ public class OptsHandler {
 
 		switch (opt) {
 		case LOGIN:
-			login(content);
+			handlerLogin(content);
 			break;
 		case REG:
-			register(content);
+			handlerRegister(content);
 			break;
 		case SENDTOONE:
 			handleMsgFromOne(content);
@@ -43,7 +43,7 @@ public class OptsHandler {
 
 	}
 
-	private void login(ServerData content) {
+	private void handlerLogin(ServerData content) {
 
 		if(content.failed()){
 			// TODO 提示登陆失败
@@ -55,7 +55,7 @@ public class OptsHandler {
 		
 	}
 
-	private void register(ServerData content) {
+	private void handlerRegister(ServerData content) {
 
 		if(content.failed()){
 			// TODO 提示注册失败

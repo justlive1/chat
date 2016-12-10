@@ -14,62 +14,51 @@ import cn.my.chatclient.util.RSAUtil;
 import io.vertx.core.json.Json;
 
 @Service
-public class OptionsServiceImpl implements OptionsService{
+public class OptionsServiceImpl implements OptionsService {
 
 	@Value("${chat.version}")
 	private String version;
 	@Value("${rsa.client.publicKey}")
 	private String publicKey;
-	
+
 	@Autowired
 	VertxManager vertxManager;
-	
+
 	@Override
 	public void login(String name, String password) {
-		
-		vertxManager.client();
-		
-		ClientData data = new ClientData();
-		data.setOption(OPTIONS.LOGIN.name());
-		data.setVersion(version);
-		
+
 		User user = new User(name, password);
-		data.setContent(RSAUtil.encode(Json.encode(user), publicKey));
-		
-		vertxManager.send(data.toJson());
-		
+
+		send(OPTIONS.LOGIN, user);
 	}
 
 	@Override
 	public void register(String name, String password) {
-		
-		vertxManager.client();
-		
-		ClientData data = new ClientData();
-		data.setOption(OPTIONS.REG.name());
-		data.setVersion(version);
-		
+
 		User user = new User(name, password);
-		data.setContent(RSAUtil.encode(Json.encode(user), publicKey));
-		
-		vertxManager.send(data.toJson());
-		
-		
+
+		send(OPTIONS.REG, user);
 	}
 
 	@Override
 	public void sendToOne(String from, String to, String msg) {
-		
-		ClientData data = new ClientData();
-		data.setOption(OPTIONS.SENDTOONE.name());
-		data.setVersion(version);
-		
+
 		MessageData message = new MessageData(from, to, msg);
-		
-		data.setContent(RSAUtil.encode(Json.encode(message), publicKey));
-		
+
+		send(OPTIONS.SENDTOONE, message);
+	}
+
+	private <T> void send(OPTIONS opt, T msg) {
+
+		vertxManager.client();
+
+		ClientData data = new ClientData();
+		data.setOption(opt.name());
+		data.setVersion(version);
+
+		data.setContent(RSAUtil.encode(Json.encode(msg), publicKey));
+
 		vertxManager.send(data.toJson());
-		
 	}
 
 }

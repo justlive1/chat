@@ -1,5 +1,7 @@
 package cn.my.chatclient.core;
 
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,30 +20,32 @@ public class ConnectHandler implements Handler<Buffer> {
 
 	@Autowired
 	OptsHandler handler;
-	
+
 	@Override
 	public void handle(Buffer buffer) {
 
-		Constants.OPTIONS opt = null;
+		String data = buffer.getString(0, buffer.length());
 
-		try {
+		Arrays.asList(data.split(Constants.SEPARATE)).forEach(line -> {
 
-			String data = buffer.getString(0, buffer.length());
-			
-			ServerData resp = Json.decodeValue(data, ServerData.class);
+			Constants.OPTIONS opt = null;
 
-			if (resp.getOption() == null || (opt = Constants.OPTIONS.valueOf(resp.getOption())) == null) {
-				// unknown options
-				return;
+			try {
+
+				ServerData resp = Json.decodeValue(line, ServerData.class);
+
+				if (resp.getOption() == null || (opt = Constants.OPTIONS.valueOf(resp.getOption())) == null) {
+					// unknown options
+					return;
+				}
+
+				handler.handler(opt, resp);
+
+			} catch (Exception e) {
+				logger.error("处理消息出错", e);
 			}
-			
-			handler.handler(opt, resp);
 
-		} catch (Exception e) {
-			// unexpected
-			logger.error("处理异常", e);
-
-		}
+		});
 
 	}
 

@@ -29,27 +29,25 @@ public class VertxManager {
 	Handler<Buffer> connecHandler;
 
 	public void client() {
-		
-		if(value.isPresent()){
+
+		if (value.isWaitingPresent()) {
 			return;
 		}
 
 		NetClient client = vertx.createNetClient();
 
 		final CountDownLatch latch = new CountDownLatch(1);
-		
+
 		value.of(latch);
-		
+
 		client.connect(port, host, r -> {
 
 			if (r.succeeded()) {
 
 				NetSocket socket = r.result();
 
-				if (!value.isPresent()) {
-					value.of(socket.writeHandlerID());
-					latch.countDown();
-				}
+				value.of(socket.writeHandlerID());
+				latch.countDown();
 
 				socket.handler(connecHandler).exceptionHandler(e -> {
 					// read exception handler
