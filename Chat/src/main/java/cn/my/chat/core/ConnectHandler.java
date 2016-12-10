@@ -16,7 +16,6 @@ import cn.my.chat.model.Constants;
 import cn.my.chat.util.RSAUtil;
 import cn.my.chat.util.ThreadStorage;
 import io.vertx.core.Handler;
-import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.Json;
 import io.vertx.core.net.NetSocket;
@@ -42,13 +41,8 @@ public class ConnectHandler implements Handler<NetSocket> {
 
 	@Autowired
 	SessionManager sessionManager;
-
 	@Autowired
 	OptsHandler optsHandler;
-
-	@Autowired
-	EventBus eventBus;
-	
 	@Autowired
 	VertxManager vertxManager;
 

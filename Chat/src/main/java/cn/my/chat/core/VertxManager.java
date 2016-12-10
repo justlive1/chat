@@ -61,4 +61,13 @@ public class VertxManager {
 		vertx.eventBus().<T>consumer(key).handler(handler);
 	}
 	
+	/**
+	 * 向事件处理发布一个消息
+	 * @param handlerId
+	 * @param event
+	 */
+	public <T> void publish(String handlerId, T message){
+		vertx.eventBus().send(handlerId, message);
+	}
+	
 }

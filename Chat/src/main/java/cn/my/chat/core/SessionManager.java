@@ -14,7 +14,6 @@ import cn.my.chat.exception.Exceptions;
 import cn.my.chat.model.User;
 import cn.my.chat.model.UserOnline;
 import cn.my.chat.service.AccountService;
-import io.vertx.core.eventbus.EventBus;
 
 /**
  * 用户会话管理
@@ -33,7 +32,7 @@ public class SessionManager {
 	CacheManager cacheManager;
 	
 	@Autowired
-	EventBus eventBus;
+	VertxManager vertxManager;
 
 	/**
 	 * 用户连接成功<br>
@@ -108,7 +107,7 @@ public class SessionManager {
 	}
 	
 	private void closedExistingUser(String handlerId){
-		eventBus.send(handlerId+"_closed", ErrorCodes.LOGINONCEMORE);
+		vertxManager.publish(handlerId+"_closed", ErrorCodes.LOGINONCEMORE);
 	}
 
 }
