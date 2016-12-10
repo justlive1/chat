@@ -9,6 +9,7 @@ import cn.my.chat.exception.CodedException;
 import cn.my.chat.exception.ErrorCode;
 import cn.my.chat.exception.ErrorCodes;
 import cn.my.chat.exception.Exceptions;
+import cn.my.chat.model.Constants;
 import cn.my.chat.model.Constants.OPTIONS;
 import cn.my.chat.model.MessageData;
 import cn.my.chat.model.ServerData;
@@ -16,7 +17,6 @@ import cn.my.chat.model.User;
 import cn.my.chat.model.UserOnline;
 import cn.my.chat.service.AccountService;
 import cn.my.chat.service.MessageService;
-import cn.my.chat.util.RSAUtil;
 import cn.my.chat.util.ThreadStorage;
 import io.vertx.core.json.Json;
 import io.vertx.core.net.NetSocket;
@@ -37,9 +37,9 @@ public class OptsHandler {
 	AccountService accountService;
 	@Autowired
 	MessageService messageService;
-	
-	@Value("${rsa.server.publicKey}")
-	private String publicKey;
+	@Autowired
+	VertxManager vertxManager;
+
 	@Value("${chat.version}")
 	private String version;
 
@@ -85,7 +85,7 @@ public class OptsHandler {
 		data.setVersion(version);
 		data.setOption(OPTIONS.REG.name());
 
-		socket.write(Json.encode(data));
+		vertxManager.send(socket.writeHandlerID(), Json.encode(data));
 	}
 
 	private void login(NetSocket socket, String content) {
@@ -102,8 +102,7 @@ public class OptsHandler {
 		data.setVersion(version);
 		data.setOption(OPTIONS.LOGIN.name());
 
-		socket.write(Json.encode(data));
-		
+		vertxManager.send(socket.writeHandlerID(), Json.encode(data));
 	}
 
 	private void sendToOne(NetSocket socket, String content) {
@@ -111,11 +110,11 @@ public class OptsHandler {
 		MessageData message = Json.decodeValue(content, MessageData.class);
 
 		UserOnline from = sessionManager.checkOnline(socket.writeHandlerID());
-		if(!from.getName().equals(message.getFrom())){
+		if (!from.getName().equals(message.getFrom())) {
 			throw Exceptions.fail(ErrorCodes.ILEGALOPTS);
 		}
 		UserOnline to = sessionManager.checkOnline(message.getTo());
-		
+
 		messageService.sendToOne(message.getFrom(), to, message.getMsg());
 	}
 
@@ -131,16 +130,7 @@ public class OptsHandler {
 		ServerData data = new ServerData(version, e.getCode(), e.getMsg());
 		data.setOption(ThreadStorage.get());
 
-		return Json.encode(data);
+		return Json.encode(data) + Constants.SEPARATE;
 	}
 
-	public String result(String option, String content) {
-
-		ServerData data = new ServerData();
-		data.setVersion(version);
-		data.setOption(option);
-		data.setContent(RSAUtil.encode(content, publicKey));
-
-		return Json.encode(data);
-	}
 }

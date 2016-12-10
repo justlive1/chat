@@ -48,6 +48,9 @@ public class ConnectHandler implements Handler<NetSocket> {
 
 	@Autowired
 	EventBus eventBus;
+	
+	@Autowired
+	VertxManager vertxManager;
 
 	@Override
 	public void handle(NetSocket socket) {
@@ -101,9 +104,10 @@ public class ConnectHandler implements Handler<NetSocket> {
 		});
 
 		// 注册异地登陆监听
-		eventBus.<ErrorCode>consumer(socket.writeHandlerID() + "_closed").handler(msg -> {
+		vertxManager.<ErrorCode>subscribe(socket.writeHandlerID()+"_closed", msg -> {
 			socket.write(optsHandler.result(msg.body())).end();
 		});
+		
 	}
 
 }

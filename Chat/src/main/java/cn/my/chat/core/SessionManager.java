@@ -6,7 +6,6 @@ import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import cn.my.chat.conf.CacheMangagerConfig;
@@ -34,7 +33,7 @@ public class SessionManager {
 	CacheManager cacheManager;
 	
 	@Autowired
-	EventBus eventBust;
+	EventBus eventBus;
 
 	/**
 	 * 用户连接成功<br>
@@ -44,7 +43,6 @@ public class SessionManager {
 	 * @param user
 	 * @return
 	 */
-	@Cacheable(key = "#handlerId")
 	public UserOnline connected(String handlerId, User user) {
 
 		boolean authed = accountService.login(user.getName(), user.getPassword());
@@ -52,15 +50,26 @@ public class SessionManager {
 		if (!authed) {
 			throw Exceptions.fail(ErrorCodes.AUTHFAILD);
 		}
+		
+		Cache cache = cacheManager.getCache(CacheMangagerConfig.ONLINES);
+		
+		UserOnline local = cache.get(handlerId, UserOnline.class);
+		// login to another user use the same connection
+		if(local != null && !local.getName().equals(user.getName())){
+			throw Exceptions.fail(ErrorCodes.ILEGALOPTS);
+		}
 
 		UserOnline userOnline =  new UserOnline(user.getName(), handlerId);
 		
-		ValueWrapper exist = cacheManager.getCache(CacheMangagerConfig.ONLINES).putIfAbsent(user.getName(), userOnline);
-		
-		if(exist != null){
-			UserOnline lastUser = (UserOnline)exist.get();
+		ValueWrapper exist = cache.putIfAbsent(user.getName(), userOnline);
+		// login to a user which is online
+		UserOnline lastUser;
+		if(exist != null && !(lastUser = (UserOnline)exist.get()).getHandlerId().equals(handlerId)){
 			closedExistingUser(lastUser.getHandlerId());
 		}
+		
+		//save the cache which key is handler
+		cache.put(handlerId, userOnline);
 		
 		return userOnline;
 	}
@@ -99,7 +108,7 @@ public class SessionManager {
 	}
 	
 	private void closedExistingUser(String handlerId){
-		eventBust.send(handlerId+"_closed", ErrorCodes.LOGINONCEMORE);
+		eventBus.send(handlerId+"_closed", ErrorCodes.LOGINONCEMORE);
 	}
 
 }

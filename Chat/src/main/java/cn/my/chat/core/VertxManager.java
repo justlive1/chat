@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import cn.my.chat.model.Constants;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.eventbus.Message;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.NetSocket;
 
@@ -19,7 +22,7 @@ import io.vertx.core.net.NetSocket;
  */
 
 @Component
-public class VertxDeploy {
+public class VertxManager {
 
 	@Value("${vertx.server.port:8000}")
 	Integer port;
@@ -37,8 +40,25 @@ public class VertxDeploy {
 
 		NetServerOptions opts = new NetServerOptions().setPort(port).setLogActivity(logActivity);
 
-		vertx.createNetServer(opts)
-		.connectHandler(connectHandler)
-		.listen(System.out::println);
+		vertx.createNetServer(opts).connectHandler(connectHandler).listen(System.out::println);
 	}
+
+	/**
+	 * 通过连接标识 发送消息
+	 * @param handlerId 连接创建时的标识
+	 * @param msg
+	 */
+	public void send(String handlerId, String msg) {
+		vertx.eventBus().send(handlerId, Buffer.buffer(msg + Constants.SEPARATE));
+	}
+	
+	/**
+	 * 注册一个事件处理
+	 * @param key 事件监听key
+	 * @param handler
+	 */
+	public <T> void subscribe(String key,Handler<Message<T>> handler){
+		vertx.eventBus().<T>consumer(key).handler(handler);
+	}
+	
 }
