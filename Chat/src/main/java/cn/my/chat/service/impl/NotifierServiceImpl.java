@@ -50,6 +50,6 @@ public class NotifierServiceImpl implements NotifierService{
 		String encodeData = RSAUtil.encode(Json.encode(message), publicKey);
 		data.setContent(encodeData);
 		
-		vertxManager.send(user.getHandlerId(), Json.encode(data));
+		vertxManager.send(user.getHandlerId(), data.toJson());
 	}
 }

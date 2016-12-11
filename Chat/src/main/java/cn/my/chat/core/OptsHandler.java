@@ -9,7 +9,6 @@ import cn.my.chat.exception.CodedException;
 import cn.my.chat.exception.ErrorCode;
 import cn.my.chat.exception.ErrorCodes;
 import cn.my.chat.exception.Exceptions;
-import cn.my.chat.model.Constants;
 import cn.my.chat.model.Constants.OPTIONS;
 import cn.my.chat.model.MessageData;
 import cn.my.chat.model.ServerData;
@@ -85,7 +84,7 @@ public class OptsHandler {
 		data.setVersion(version);
 		data.setOption(OPTIONS.REG.name());
 
-		vertxManager.send(socket.writeHandlerID(), Json.encode(data));
+		vertxManager.send(socket.writeHandlerID(), data.toJson());
 	}
 
 	private void login(NetSocket socket, String content) {
@@ -102,7 +101,7 @@ public class OptsHandler {
 		data.setVersion(version);
 		data.setOption(OPTIONS.LOGIN.name());
 
-		vertxManager.send(socket.writeHandlerID(), Json.encode(data));
+		vertxManager.send(socket.writeHandlerID(), data.toJson());
 	}
 
 	private void sendToOne(NetSocket socket, String content) {
@@ -130,7 +129,7 @@ public class OptsHandler {
 		ServerData data = new ServerData(version, e.getCode(), e.getMsg());
 		data.setOption(ThreadStorage.get());
 
-		return Json.encode(data) + Constants.SEPARATE;
+		return data.toJson();
 	}
 
 }

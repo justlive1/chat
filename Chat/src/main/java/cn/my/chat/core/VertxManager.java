@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import cn.my.chat.model.Constants;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -49,7 +48,7 @@ public class VertxManager {
 	 * @param msg
 	 */
 	public void send(String handlerId, String msg) {
-		vertx.eventBus().send(handlerId, Buffer.buffer(msg + Constants.SEPARATE));
+		vertx.eventBus().send(handlerId, Buffer.buffer(msg));
 	}
 	
 	/**
