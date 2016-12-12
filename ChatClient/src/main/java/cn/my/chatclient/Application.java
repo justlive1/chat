@@ -20,6 +20,8 @@ public class Application {
 		OptionsService options = ctx.getBean(OptionsService.class);
 		
 		options.login("user", "password");
+		
+		options.sendToOne("user", "sss1", "msg");
 			
 	}
 }
