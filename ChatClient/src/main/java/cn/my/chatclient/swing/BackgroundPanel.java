@@ -1,4 +1,4 @@
-package cn.my.chatclient.awt;
+package cn.my.chatclient.swing;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;

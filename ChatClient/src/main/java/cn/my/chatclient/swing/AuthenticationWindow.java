@@ -1,4 +1,4 @@
-package cn.my.chatclient.awt;
+package cn.my.chatclient.swing;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -38,7 +38,7 @@ public class AuthenticationWindow {
 	@Autowired
 	OptionsService optionsService;
 	@Autowired
-	AlertWindow alert;
+	AlertDialog alert;
 
 	@PostConstruct
 	void init() {
@@ -142,16 +142,11 @@ public class AuthenticationWindow {
 
 	private void doLogin() {
 
-		loginBtn().setEnabled(false);
-		registerBtn().setEnabled(false);
-
 		String username = userNameField().getText();
 		String password = new String(passwordField().getPassword());
 
 		if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-			alert.alert("请输入用户名和密码", () -> {
-				authFailed();
-			});
+			alert.alert("请输入用户名和密码");
 			return;
 		}
 
@@ -161,16 +156,11 @@ public class AuthenticationWindow {
 
 	private void doRegister() {
 
-		loginBtn().setEnabled(false);
-		registerBtn().setEnabled(false);
-
 		String username = userNameField().getText();
 		String password = new String(passwordField().getPassword());
 
 		if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-			alert.alert("请输入用户名和密码", () -> {
-				authFailed();
-			});
+			alert.alert("请输入用户名和密码");
 			return;
 		}
 
@@ -179,15 +169,8 @@ public class AuthenticationWindow {
 	}
 	
 	public void loginSuccessed() {
-		loginBtn().setEnabled(true);
-		registerBtn().setEnabled(true);
 		userNameField().setText("");
 		passwordField().setText("");
-	}
-
-	public void authFailed() {
-		loginBtn().setEnabled(true);
-		registerBtn().setEnabled(true);
 	}
 
 	public void registerSuccessed() {

@@ -1,10 +1,10 @@
-package cn.my.chatclient.awt;
+package cn.my.chatclient.swing;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -19,22 +19,22 @@ import cn.my.chatclient.core.CallBack;
  *
  */
 @Component
-public class AlertWindow {
+public class AlertDialog {
 
-	private JFrame jFrame;
 	private JPanel jContentPane;
 	private JLabel jLabelAlertInfo;
 	private JButton jButton;
+	private JDialog jDialog;
 
 	private CallBack callback;
-
-	AlertWindow() {
-		jFrame();
+	
+	AlertDialog() {
+		jDialog();
 	}
 
 	public void alert(String info) {
 		jLabelAlertInfo.setText(info);
-		jFrame().setVisible(true);
+		jDialog().setVisible(true);
 	}
 
 	public void alert(String info, CallBack callback) {
@@ -42,15 +42,16 @@ public class AlertWindow {
 		this.callback = callback;
 	}
 
-	private JFrame jFrame() {
-		if (jFrame == null) {
-			jFrame = new JFrame();
-			jFrame.setSize(new Dimension(200, 100));
-			jFrame.setTitle("message");
-			jFrame.setResizable(false);
-			jFrame.setContentPane(jContentPane());
-			jFrame.setLocationRelativeTo(null);
-			jFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+	private JDialog jDialog(){
+		if(jDialog == null){
+			jDialog = new JDialog();
+			jDialog.setModal(true);
+			jDialog.setSize(new Dimension(200, 100));
+			jDialog.setTitle("message");
+			jDialog.setResizable(false);
+			jDialog.setContentPane(jContentPane());
+			jDialog.setLocationRelativeTo(null);
+			jDialog.addWindowListener(new java.awt.event.WindowAdapter() {
 				public void windowClosing(java.awt.event.WindowEvent e) {
 					if (callback != null) {
 						callback.call();
@@ -59,9 +60,9 @@ public class AlertWindow {
 				}
 			});
 		}
-		return jFrame;
+		return jDialog;
 	}
-
+	
 	private JPanel jContentPane() {
 		if (jContentPane == null) {
 			jLabelAlertInfo = new JLabel("",JLabel.CENTER);
@@ -82,11 +83,12 @@ public class AlertWindow {
 			jButton.setText("orz");
 			jButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					jFrame().setVisible(false);
+					jDialog().setVisible(false);
 					if (callback != null) {
 						callback.call();
 						callback = null;
 					}
+					jLabelAlertInfo.setText("");
 				}
 			});
 		}
