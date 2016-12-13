@@ -54,6 +54,7 @@ public class AlertWindow {
 				public void windowClosing(java.awt.event.WindowEvent e) {
 					if (callback != null) {
 						callback.call();
+						callback = null;
 					}
 				}
 			});
