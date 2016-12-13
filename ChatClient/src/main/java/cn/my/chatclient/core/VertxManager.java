@@ -26,7 +26,7 @@ public class VertxManager {
 	@Value("${vertx.server.port:8000}")
 	private int port;
 
-	 Optional<String> value = Optional.empty();
+	Optional<String> value = Optional.empty();
 
 	@Autowired
 	Vertx vertx;
