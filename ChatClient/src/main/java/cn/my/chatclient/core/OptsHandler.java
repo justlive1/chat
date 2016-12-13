@@ -1,8 +1,11 @@
 package cn.my.chatclient.core;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cn.my.chatclient.model.Constants.OPTIONS;
+import cn.my.chatclient.awt.AlertWindow;
+import cn.my.chatclient.awt.LoginWindow;
 import cn.my.chatclient.model.MessageData;
 import cn.my.chatclient.model.ServerData;
 import io.vertx.core.json.Json;
@@ -16,6 +19,11 @@ import io.vertx.core.json.Json;
 
 @Component
 public class OptsHandler {
+	
+	@Autowired
+	AlertWindow alert;
+	@Autowired
+	LoginWindow login;
 
 	/**
 	 * 处理收到的消息
@@ -42,17 +50,27 @@ public class OptsHandler {
 		}
 
 	}
+	
+	public void connectFailed(){
+		
+		alert.alert("连接服务器失败", () -> {
+			login.loginFailed();
+		});
+		
+	}
 
 	private void handlerLogin(ServerData content) {
 
 		if(content.failed()){
-			// TODO 提示登陆失败
-			System.out.println(content);
+			// 提示登陆失败
+			alert.alert(content.getMsg(), () -> {
+				login.loginFailed();
+			});
 			return;
 		}
 		
-		// TODO 登陆成功处理
-		
+		// 登陆成功处理
+		login.loginSuccessed();
 	}
 
 	private void handlerRegister(ServerData content) {

@@ -6,10 +6,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import cn.my.chatclient.exception.CanceledException;
+
 public final class Optional<T> {
 
 	private transient CountDownLatch latch;
 	private volatile T value;
+	private volatile boolean canceled = false;
 
 	private Optional() {
 		this.value = null;
@@ -25,6 +28,7 @@ public final class Optional<T> {
 
 	public Optional<T> of(T value) {
 		this.value = value;
+		this.canceled = false;
 		return this;
 	}
 
@@ -35,8 +39,11 @@ public final class Optional<T> {
 
 	public void clean() {
 		this.value = null;
-		this.latch.countDown();
-		this.latch = null;
+		if (latch != null) {
+			this.canceled = true;
+			this.latch.countDown();
+			this.latch = null;
+		}
 	}
 
 	public T get() {
@@ -57,7 +64,7 @@ public final class Optional<T> {
 		}
 		return value;
 	}
-	
+
 	public T getWaitingUncheck() {
 
 		if (latch != null) {
@@ -68,6 +75,10 @@ public final class Optional<T> {
 			}
 		}
 
+		if (canceled) {
+			throw new CanceledException("option canceled");
+		}
+		
 		if (value == null) {
 			throw new NoSuchElementException("No value present");
 		}
@@ -82,7 +93,11 @@ public final class Optional<T> {
 				throw new TimeoutException();
 			}
 		}
-
+		
+		if (canceled) {
+			throw new CanceledException("option canceled");
+		}
+		
 		if (value == null) {
 			throw new NoSuchElementException("No value present");
 		}
@@ -119,6 +134,6 @@ public final class Optional<T> {
 
 	@Override
 	public String toString() {
-		return value != null ? String.format("Optional[%s]", value) : "Optional.empty";
+		return value + "|" + latch;
 	}
 }
