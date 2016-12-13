@@ -10,7 +10,7 @@ import cn.my.chatclient.exception.CanceledException;
 
 public final class Optional<T> {
 
-	private transient CountDownLatch latch;
+	private volatile CountDownLatch latch;
 	private volatile T value;
 	private volatile boolean canceled = false;
 

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import cn.my.chatclient.model.Constants.OPTIONS;
 import cn.my.chatclient.awt.AlertWindow;
-import cn.my.chatclient.awt.LoginWindow;
+import cn.my.chatclient.awt.AuthenticationWindow;
 import cn.my.chatclient.model.MessageData;
 import cn.my.chatclient.model.ServerData;
 import io.vertx.core.json.Json;
@@ -23,7 +23,7 @@ public class OptsHandler {
 	@Autowired
 	AlertWindow alert;
 	@Autowired
-	LoginWindow login;
+	AuthenticationWindow auth;
 
 	/**
 	 * 处理收到的消息
@@ -54,7 +54,7 @@ public class OptsHandler {
 	public void connectFailed(){
 		
 		alert.alert("连接服务器失败", () -> {
-			login.loginFailed();
+			auth.authFailed();
 		});
 		
 	}
@@ -64,25 +64,26 @@ public class OptsHandler {
 		if(content.failed()){
 			// 提示登陆失败
 			alert.alert(content.getMsg(), () -> {
-				login.loginFailed();
+				auth.authFailed();
 			});
 			return;
 		}
-		
 		// 登陆成功处理
-		login.loginSuccessed();
+		auth.loginSuccessed();
 	}
 
 	private void handlerRegister(ServerData content) {
 
 		if(content.failed()){
-			// TODO 提示注册失败
-			System.out.println(content);
+			// 提示注册失败
+			alert.alert(content.getMsg(), () -> {
+				auth.authFailed();
+			});
 			return;
 		}
 		
-		// TODO 登陆
-		
+		// 登陆
+		auth.registerSuccessed();
 	}
 
 	private void handleMsgFromOne(ServerData content) {
@@ -98,5 +99,5 @@ public class OptsHandler {
 		System.out.println(data);
 		
 	}
-
+	
 }

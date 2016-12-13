@@ -64,10 +64,9 @@ public class AlertWindow {
 
 	private JPanel jContentPane() {
 		if (jContentPane == null) {
-			jLabelAlertInfo = new JLabel();
-			jLabelAlertInfo.setBounds(new Rectangle(60, 20, 100, 20));
+			jLabelAlertInfo = new JLabel("",JLabel.CENTER);
+			jLabelAlertInfo.setBounds(new Rectangle(10, 20, 180, 20));
 			jLabelAlertInfo.setEnabled(false);
-			jLabelAlertInfo.setText("");
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
 			jContentPane.add(jLabelAlertInfo, null);

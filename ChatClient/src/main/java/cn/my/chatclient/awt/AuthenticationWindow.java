@@ -15,6 +15,7 @@ import javax.swing.WindowConstants;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import cn.my.chatclient.service.OptionsService;
 
@@ -25,7 +26,7 @@ import cn.my.chatclient.service.OptionsService;
  *
  */
 @Component
-public class LoginWindow {
+public class AuthenticationWindow {
 
 	private JFrame jFrame;
 	private JPanel jPanel;
@@ -36,6 +37,8 @@ public class LoginWindow {
 
 	@Autowired
 	OptionsService optionsService;
+	@Autowired
+	AlertWindow alert;
 
 	@PostConstruct
 	void init() {
@@ -47,7 +50,7 @@ public class LoginWindow {
 	private JTextField userNameField() {
 		if (userNameField == null) {
 			userNameField = new JTextField();
-			userNameField.setBounds(new Rectangle(84, 66, 266, 33));
+			userNameField.setBounds(new Rectangle(90, 66, 266, 33));
 			// userNameField.addKeyListener(new java.awt.event.KeyAdapter() {
 			// public void keyPressed(java.awt.event.KeyEvent e) {
 			// if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
@@ -62,7 +65,7 @@ public class LoginWindow {
 	private JPasswordField passwordField() {
 		if (passwordField == null) {
 			passwordField = new JPasswordField();
-			passwordField.setBounds(new Rectangle(84, 121, 266, 33));
+			passwordField.setBounds(new Rectangle(90, 121, 266, 33));
 			passwordField.addKeyListener(new java.awt.event.KeyAdapter() {
 				public void keyPressed(java.awt.event.KeyEvent e) {
 					if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
@@ -77,8 +80,8 @@ public class LoginWindow {
 	private JButton loginBtn() {
 		if (loginBtn == null) {
 			loginBtn = new JButton();
-			loginBtn.setBounds(new Rectangle(84, 172, 120, 41));
-			loginBtn.setText("login");
+			loginBtn.setBounds(new Rectangle(90, 172, 120, 41));
+			loginBtn.setText("login in");
 			loginBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					doLogin();
@@ -91,11 +94,11 @@ public class LoginWindow {
 	private JButton registerBtn() {
 		if (registerBtn == null) {
 			registerBtn = new JButton();
-			registerBtn.setBounds(new Rectangle(230, 172, 120, 41));
-			registerBtn.setText("register");
+			registerBtn.setBounds(new Rectangle(235, 172, 120, 41));
+			registerBtn.setText("sign up");
 			registerBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					// TODO
+					doRegister();
 				}
 			});
 		}
@@ -106,7 +109,7 @@ public class LoginWindow {
 		if (jFrame == null) {
 			jFrame = new JFrame();
 			jFrame.setSize(new Dimension(389, 274));
-			jFrame.setTitle("login");
+			jFrame.setTitle("Authentication");
 			jFrame.setResizable(false);
 			jFrame.setContentPane(jContentPane());
 			jFrame.setLocationRelativeTo(null);
@@ -120,11 +123,11 @@ public class LoginWindow {
 			userNameText = new JLabel();
 			userNameText.setBounds(new Rectangle(18, 63, 335, 38));
 			userNameText.setFont(new Font("Dialog", Font.BOLD, 14));
-			userNameText.setText("用户名");
+			userNameText.setText("username");
 			passwordText = new JLabel();
 			passwordText.setBounds(new Rectangle(18, 117, 335, 38));
 			passwordText.setFont(new Font("Dialog", Font.BOLD, 14));
-			passwordText.setText("密码");
+			passwordText.setText("password");
 			jPanel = new BackgroundPanel();
 			jPanel.setLayout(null);
 			jPanel.add(userNameText, null);
@@ -138,24 +141,59 @@ public class LoginWindow {
 	}
 
 	private void doLogin() {
-		
+
 		loginBtn().setEnabled(false);
-		
+		registerBtn().setEnabled(false);
+
 		String username = userNameField().getText();
 		String password = new String(passwordField().getPassword());
-		
+
+		if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
+			alert.alert("请输入用户名和密码", () -> {
+				authFailed();
+			});
+			return;
+		}
+
 		optionsService.login(username, password);
-		
+
+	}
+
+	private void doRegister() {
+
+		loginBtn().setEnabled(false);
+		registerBtn().setEnabled(false);
+
+		String username = userNameField().getText();
+		String password = new String(passwordField().getPassword());
+
+		if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
+			alert.alert("请输入用户名和密码", () -> {
+				authFailed();
+			});
+			return;
+		}
+
+		optionsService.register(username, password);
+
 	}
 	
-	public void loginSuccessed(){
+	public void loginSuccessed() {
 		loginBtn().setEnabled(true);
+		registerBtn().setEnabled(true);
 		userNameField().setText("");
 		passwordField().setText("");
 	}
-	
-	public void loginFailed(){
+
+	public void authFailed() {
 		loginBtn().setEnabled(true);
+		registerBtn().setEnabled(true);
 	}
-	
+
+	public void registerSuccessed() {
+		loginBtn().setEnabled(true);
+		registerBtn().setEnabled(true);
+		alert.alert("注册成功");
+	}
+
 }
