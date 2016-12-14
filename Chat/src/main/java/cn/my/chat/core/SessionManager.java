@@ -121,7 +121,7 @@ public class SessionManager {
 
 		Set<?> keys = cacheManager.cacheKeys(CacheMangagerConfig.ONLINES_NAME);
 
-		return keys.stream().map(key -> (String) key).collect(Collectors.toList());
+		return keys.stream().map(String::valueOf).collect(Collectors.toList());
 	}
 
 	private void closedExistingUser(String handlerId) {

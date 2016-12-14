@@ -92,7 +92,6 @@ public class ConnectHandler implements Handler<NetSocket> {
 
 		}).closeHandler(r -> {
 			// 断开连接
-			logger.warn("断开连接");
 			sessionManager.closed(socket.writeHandlerID());
 
 		}).exceptionHandler(e -> {
