@@ -68,7 +68,7 @@ public class ConnectHandler implements Handler<NetSocket> {
 
 					ThreadStorage.set(opt.name());
 					String decodeData = null;
-					if(resp.getContent() != null){
+					if (resp.getContent() != null) {
 						decodeData = RSAUtil.decode(resp.getContent(), privateKey);
 					}
 
@@ -83,8 +83,7 @@ public class ConnectHandler implements Handler<NetSocket> {
 					if (Constants.OPTIONS.isClosed(opt)) {
 						socket.end();
 					}
-				} 
-				catch (Exception e) {
+				} catch (Exception e) {
 					logger.error("处理异常", e);
 					socket.write(optsHandler.result(ErrorCodes.SYSTEMERROR)).end();
 				}
@@ -93,18 +92,19 @@ public class ConnectHandler implements Handler<NetSocket> {
 
 		}).closeHandler(r -> {
 			// 断开连接
+			logger.warn("断开连接");
 			sessionManager.closed(socket.writeHandlerID());
 
 		}).exceptionHandler(e -> {
 			// read exception handler
-
+			logger.error("",e);
 		});
 
 		// 注册异地登陆监听
-		vertxManager.<ErrorCode>subscribe(socket.writeHandlerID()+"_closed", msg -> {
+		vertxManager.<ErrorCode>subscribe(socket.writeHandlerID() + "_closed", msg -> {
 			socket.write(optsHandler.result(msg.body())).end();
 		});
-		
+
 	}
 
 }

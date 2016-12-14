@@ -93,6 +93,7 @@ public class FriendsWindow {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					//TODO
+					System.out.println(1);
 				}
 			});
 		}

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
@@ -28,12 +30,14 @@ import cn.my.chat.service.AccountService;
 @CacheConfig(cacheNames = CacheMangagerConfig.ONLINES_ID)
 public class SessionManager {
 
+	private Logger logger = LoggerFactory.getLogger(getClass());
+
 	@Autowired
 	AccountService accountService;
 
 	@Autowired
 	CacheManagerForwarding cacheManager;
-	
+
 	@Autowired
 	VertxManager vertxManager;
 
@@ -52,29 +56,29 @@ public class SessionManager {
 		if (!authed) {
 			throw Exceptions.fail(ErrorCodes.AUTHFAILD);
 		}
-		
+
 		Cache idCache = cacheManager.getCache(CacheMangagerConfig.ONLINES_ID);
-		
+
 		UserOnline local = idCache.get(handlerId, UserOnline.class);
 		// login to another user use the same connection
-		if(local != null && !local.getName().equals(user.getName())){
+		if (local != null && !local.getName().equals(user.getName())) {
 			throw Exceptions.fail(ErrorCodes.ILEGALOPTS);
 		}
 
-		UserOnline userOnline =  new UserOnline(user.getName(), handlerId);
-		
+		UserOnline userOnline = new UserOnline(user.getName(), handlerId);
+
 		Cache nameCache = cacheManager.getCache(CacheMangagerConfig.ONLINES_NAME);
-		
+
 		ValueWrapper exist = nameCache.putIfAbsent(user.getName(), userOnline);
 		// login to a user which is online
 		UserOnline lastUser;
-		if(exist != null && !(lastUser = (UserOnline)exist.get()).getHandlerId().equals(handlerId)){
+		if (exist != null && !(lastUser = (UserOnline) exist.get()).getHandlerId().equals(handlerId)) {
 			closedExistingUser(lastUser.getHandlerId());
 		}
-		
-		//save the cache which key is handler
+
+		// save the cache which key is handler
 		idCache.put(handlerId, userOnline);
-		
+
 		return userOnline;
 	}
 
@@ -95,8 +99,8 @@ public class SessionManager {
 		}
 
 		Cache nameCache = cacheManager.getCache(CacheMangagerConfig.ONLINES_NAME);
-		
-		if(handlerId.equals(user.getHandlerId())){
+
+		if (handlerId.equals(user.getHandlerId())) {
 			nameCache.evict(user.getName());
 		}
 	}
@@ -112,17 +116,19 @@ public class SessionManager {
 
 		return user;
 	}
-	
-	public List<String> loadAllOnlineUsers(){
-		
-		Set<?> keys =  cacheManager.cacheKeys(CacheMangagerConfig.ONLINES_NAME);
-		
-		return keys.stream().map(key -> (String)key).collect(Collectors.toList());
+
+	public List<String> loadAllOnlineUsers() {
+
+		Set<?> keys = cacheManager.cacheKeys(CacheMangagerConfig.ONLINES_NAME);
+
+		return keys.stream().map(key -> (String) key).collect(Collectors.toList());
 	}
-	
-	
-	private void closedExistingUser(String handlerId){
-		vertxManager.publish(handlerId+"_closed", ErrorCodes.LOGINONCEMORE);
+
+	private void closedExistingUser(String handlerId) {
+
+		logger.warn("断开已登陆的连接,{}", handlerId);
+
+		vertxManager.publish(handlerId + "_closed", ErrorCodes.LOGINONCEMORE);
 	}
 
 }

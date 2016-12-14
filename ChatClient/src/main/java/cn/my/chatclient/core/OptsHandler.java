@@ -100,9 +100,8 @@ public class OptsHandler {
 			String decoedData = RSAUtil.decode(content.getContent(), privateKey);
 			@SuppressWarnings("unchecked")
 			List<String> users = Json.decodeValue(decoedData, List.class);
-			
+
 			dispacher.showFriends(users);
-			
 		}
 	}
 
