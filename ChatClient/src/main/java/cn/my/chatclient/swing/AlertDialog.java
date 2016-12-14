@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 import org.springframework.stereotype.Component;
 
-import cn.my.chatclient.core.CallBack;
+import cn.my.chatclient.core.Callback;
 
 /**
  * 消息弹出框
@@ -26,7 +26,7 @@ public class AlertDialog {
 	private JButton jButton;
 	private JDialog jDialog;
 
-	private CallBack callback;
+	private Callback callback;
 	
 	AlertDialog() {
 		jDialog();
@@ -37,7 +37,7 @@ public class AlertDialog {
 		jDialog().setVisible(true);
 	}
 
-	public void alert(String info, CallBack callback) {
+	public void alert(String info, Callback callback) {
 		alert(info);
 		this.callback = callback;
 	}

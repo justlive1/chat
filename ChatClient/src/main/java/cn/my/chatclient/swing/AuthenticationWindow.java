@@ -38,7 +38,7 @@ public class AuthenticationWindow {
 	@Autowired
 	OptionsService optionsService;
 	@Autowired
-	AlertDialog alert;
+	WindowsDispacher dispacher;
 
 	@PostConstruct
 	void init() {
@@ -146,7 +146,7 @@ public class AuthenticationWindow {
 		String password = new String(passwordField().getPassword());
 
 		if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-			alert.alert("请输入用户名和密码");
+			dispacher.alert("请输入用户名和密码");
 			return;
 		}
 
@@ -160,7 +160,7 @@ public class AuthenticationWindow {
 		String password = new String(passwordField().getPassword());
 
 		if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-			alert.alert("请输入用户名和密码");
+			dispacher.alert("请输入用户名和密码");
 			return;
 		}
 
@@ -171,12 +171,14 @@ public class AuthenticationWindow {
 	public void loginSuccessed() {
 		userNameField().setText("");
 		passwordField().setText("");
+		jframe().setVisible(false);
+		//TODO
 	}
 
 	public void registerSuccessed() {
 		loginBtn().setEnabled(true);
 		registerBtn().setEnabled(true);
-		alert.alert("注册成功");
+		dispacher.alert("注册成功");
 	}
 
 }

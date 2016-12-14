@@ -6,7 +6,7 @@ package cn.my.chatclient.core;
  *
  */
 @FunctionalInterface
-public interface CallBack {
+public interface Callback {
 	
 	void call();
 }

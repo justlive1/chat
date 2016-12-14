@@ -35,7 +35,8 @@ dependencies {
 	compile group: 'org.springframework', name: 'spring-context-support', version: spring_version
 
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '1.4.1.RELEASE'
-
+	compile("org.springframework.boot:spring-boot-devtools:1.4.1.RELEASE")
+	
 	testCompile("org.springframework.boot:spring-boot-starter-test:1.4.1.RELEASE")
 
 }

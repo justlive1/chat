@@ -4,10 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cn.my.chatclient.model.Constants.OPTIONS;
-import cn.my.chatclient.swing.AlertDialog;
-import cn.my.chatclient.swing.AuthenticationWindow;
 import cn.my.chatclient.model.MessageData;
 import cn.my.chatclient.model.ServerData;
+import cn.my.chatclient.swing.WindowsDispacher;
 import io.vertx.core.json.Json;
 
 /**
@@ -21,9 +20,7 @@ import io.vertx.core.json.Json;
 public class OptsHandler {
 	
 	@Autowired
-	AlertDialog alert;
-	@Autowired
-	AuthenticationWindow auth;
+	WindowsDispacher dispacher;
 
 	/**
 	 * 处理收到的消息
@@ -53,7 +50,7 @@ public class OptsHandler {
 	
 	public void connectFailed(){
 		
-		alert.alert("连接服务器失败");
+		dispacher.alert("连接服务器失败");
 		
 	}
 
@@ -61,23 +58,23 @@ public class OptsHandler {
 
 		if(content.failed()){
 			// 提示登陆失败
-			alert.alert(content.getMsg());
+			dispacher.alert(content.getMsg());
 			return;
 		}
 		// 登陆成功处理
-		auth.loginSuccessed();
+		dispacher.showAuth(0);
 	}
 
 	private void handlerRegister(ServerData content) {
 
 		if(content.failed()){
 			// 提示注册失败
-			alert.alert(content.getMsg());
+			dispacher.alert(content.getMsg());
 			return;
 		}
 		
 		// 登陆
-		auth.registerSuccessed();
+		dispacher.showAuth(1);
 	}
 
 	private void handleMsgFromOne(ServerData content) {
