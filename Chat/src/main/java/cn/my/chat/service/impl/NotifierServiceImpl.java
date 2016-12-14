@@ -6,11 +6,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 
 import cn.my.chat.core.VertxManager;
-import cn.my.chat.model.Constants;
 import cn.my.chat.model.Message;
-import cn.my.chat.model.MessageData;
 import cn.my.chat.model.ServerData;
-import cn.my.chat.model.UserOnline;
 import cn.my.chat.service.NotifierService;
 import cn.my.chat.util.RSAUtil;
 import io.vertx.core.json.Json;
@@ -38,18 +35,16 @@ public class NotifierServiceImpl implements NotifierService{
 	@EventListener(classes = Message.class)
 	@Async
 	@Override
-	public void send(Message msg) {
+	public void send(Message<?> msg) {
 
-		UserOnline user = msg.getUser();
-		
 		ServerData data = new ServerData();
 		data.setVersion(version);
-		data.setOption(Constants.OPTIONS.SENDTOONE.name());
+		data.setOption(msg.getOpt().name());
 		
-		MessageData message = new MessageData(msg.getFrom(),user.getName(),msg.getMsg());
-		String encodeData = RSAUtil.encode(Json.encode(message), publicKey);
-		data.setContent(encodeData);
-		
-		vertxManager.send(user.getHandlerId(), data.toJson());
+		if(msg.getMsg() != null){
+			String encodeData = RSAUtil.encode(Json.encode(msg.getMsg()), publicKey);
+			data.setContent(encodeData);
+		}
+		vertxManager.send(msg.getHandlerId(), data.toJson());
 	}
 }

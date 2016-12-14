@@ -13,5 +13,5 @@ public interface NotifierService {
 	 * 发送消息
 	 * @param msg
 	 */
-	public void send(Message msg);
+	public void send(Message<?> msg);
 }

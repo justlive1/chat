@@ -67,7 +67,10 @@ public class ConnectHandler implements Handler<NetSocket> {
 					}
 
 					ThreadStorage.set(opt.name());
-					String decodeData = RSAUtil.decode(resp.getContent(), privateKey);
+					String decodeData = null;
+					if(resp.getContent() != null){
+						decodeData = RSAUtil.decode(resp.getContent(), privateKey);
+					}
 
 					optsHandler.handler(socket, opt, decodeData);
 				} catch (CodedException e) {

@@ -1,6 +1,8 @@
 package cn.my.chat.core;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
@@ -23,7 +25,7 @@ import cn.my.chat.service.AccountService;
  *
  */
 @Component
-@CacheConfig(cacheNames = CacheMangagerConfig.ONLINES)
+@CacheConfig(cacheNames = CacheMangagerConfig.ONLINES_ID)
 public class SessionManager {
 
 	@Autowired
@@ -51,9 +53,9 @@ public class SessionManager {
 			throw Exceptions.fail(ErrorCodes.AUTHFAILD);
 		}
 		
-		Cache cache = cacheManager.getCache(CacheMangagerConfig.ONLINES);
+		Cache idCache = cacheManager.getCache(CacheMangagerConfig.ONLINES_ID);
 		
-		UserOnline local = cache.get(handlerId, UserOnline.class);
+		UserOnline local = idCache.get(handlerId, UserOnline.class);
 		// login to another user use the same connection
 		if(local != null && !local.getName().equals(user.getName())){
 			throw Exceptions.fail(ErrorCodes.ILEGALOPTS);
@@ -61,7 +63,9 @@ public class SessionManager {
 
 		UserOnline userOnline =  new UserOnline(user.getName(), handlerId);
 		
-		ValueWrapper exist = cache.putIfAbsent(user.getName(), userOnline);
+		Cache nameCache = cacheManager.getCache(CacheMangagerConfig.ONLINES_NAME);
+		
+		ValueWrapper exist = nameCache.putIfAbsent(user.getName(), userOnline);
 		// login to a user which is online
 		UserOnline lastUser;
 		if(exist != null && !(lastUser = (UserOnline)exist.get()).getHandlerId().equals(handlerId)){
@@ -69,7 +73,7 @@ public class SessionManager {
 		}
 		
 		//save the cache which key is handler
-		cache.put(handlerId, userOnline);
+		idCache.put(handlerId, userOnline);
 		
 		return userOnline;
 	}
@@ -83,21 +87,23 @@ public class SessionManager {
 	@CacheEvict(key = "#handlerId")
 	public void closed(String handlerId) {
 
-		Cache cache = cacheManager.getCache(CacheMangagerConfig.ONLINES);
+		Cache idCache = cacheManager.getCache(CacheMangagerConfig.ONLINES_ID);
 		UserOnline user;
 
-		if (cache == null || (user = cache.get(handlerId, UserOnline.class)) == null) {
+		if (idCache == null || (user = idCache.get(handlerId, UserOnline.class)) == null) {
 			return;
 		}
 
+		Cache nameCache = cacheManager.getCache(CacheMangagerConfig.ONLINES_NAME);
+		
 		if(handlerId.equals(user.getHandlerId())){
-			cache.evict(user.getName());
+			nameCache.evict(user.getName());
 		}
 	}
 
 	public UserOnline checkOnline(String name) {
 
-		Cache cache = cacheManager.getCache(CacheMangagerConfig.ONLINES);
+		Cache cache = cacheManager.getCache(CacheMangagerConfig.ONLINES_NAME);
 		UserOnline user;
 
 		if (cache == null || (user = cache.get(name, UserOnline.class)) == null) {
@@ -109,7 +115,9 @@ public class SessionManager {
 	
 	public List<String> loadAllOnlineUsers(){
 		
-		return null;
+		Set<?> keys =  cacheManager.cacheKeys(CacheMangagerConfig.ONLINES_NAME);
+		
+		return keys.stream().map(key -> (String)key).collect(Collectors.toList());
 	}
 	
 	

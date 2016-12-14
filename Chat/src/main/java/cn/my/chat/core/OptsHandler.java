@@ -1,5 +1,7 @@
 package cn.my.chat.core;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -62,8 +64,8 @@ public class OptsHandler {
 		case SENDTOONE:
 			sendToOne(socket, content);
 			break;
-		case SNDTOALL:
-			// TODO
+		case ONLINEUSERS:
+			onlineUsers(socket, content);
 			break;
 		default:
 			break;
@@ -80,11 +82,7 @@ public class OptsHandler {
 
 		accountService.register(user.getName(), user.getPassword());
 
-		ServerData data = new ServerData();
-		data.setVersion(version);
-		data.setOption(OPTIONS.REG.name());
-
-		vertxManager.send(socket.writeHandlerID(), data.toJson());
+		messageService.send(socket.writeHandlerID(),OPTIONS.REG, null);
 	}
 
 	private void login(NetSocket socket, String content) {
@@ -97,11 +95,15 @@ public class OptsHandler {
 
 		sessionManager.connected(socket.writeHandlerID(), user);
 
-		ServerData data = new ServerData();
-		data.setVersion(version);
-		data.setOption(OPTIONS.LOGIN.name());
+		messageService.send(socket.writeHandlerID(),OPTIONS.LOGIN, null);
+	}
 
-		vertxManager.send(socket.writeHandlerID(), data.toJson());
+	private void onlineUsers(NetSocket socket, String content) {
+		// TODO 按用户好友返回 现返回所有在线用户
+
+		List<String> users = sessionManager.loadAllOnlineUsers();
+
+		messageService.send(socket.writeHandlerID(),OPTIONS.ONLINEUSERS, users);
 	}
 
 	private void sendToOne(NetSocket socket, String content) {
@@ -114,7 +116,7 @@ public class OptsHandler {
 		}
 		UserOnline to = sessionManager.checkOnline(message.getTo());
 
-		messageService.sendToOne(message.getFrom(), to, message.getMsg());
+		messageService.send(to.getHandlerId(),OPTIONS.SENDTOONE, new MessageData(from.getName(), to.getName(), message.getMsg()));
 	}
 
 	public String result(CodedException e) {

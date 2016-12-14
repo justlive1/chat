@@ -3,8 +3,8 @@ package cn.my.chat.service.impl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 
+import cn.my.chat.model.Constants.OPTIONS;
 import cn.my.chat.model.Message;
-import cn.my.chat.model.UserOnline;
 import cn.my.chat.service.MessageService;
 
 /**
@@ -29,14 +29,9 @@ public class MessageServiceImpl implements ApplicationEventPublisherAware, Messa
 
 
 	@Override
-	public void sendToOne(String from, UserOnline to, String msg) {
+	public <T> void send(String handlerId, OPTIONS opt, T msg) {
 
-		publisher.publishEvent(new Message(from, to, msg));
-	}
-
-	@Override
-	public void sendToAll(String from, String msg) {
-		// TODO
+		publisher.publishEvent(new Message<T>(handlerId, opt, msg));
 	}
 
 }

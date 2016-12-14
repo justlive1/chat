@@ -41,7 +41,8 @@ import lombok.Data;
 @EnableCaching
 public class CacheMangagerConfig {
 
-	public static final String ONLINES = "onlines";
+	public static final String ONLINES_ID = "ONLINES_ID";
+	public static final String ONLINES_NAME = "ONLINES_NAME";
 
 	@Bean
 	@Profile("dev")
