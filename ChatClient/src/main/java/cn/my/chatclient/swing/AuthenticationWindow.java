@@ -172,7 +172,7 @@ public class AuthenticationWindow {
 		userNameField().setText("");
 		passwordField().setText("");
 		jframe().setVisible(false);
-		//TODO
+		dispacher.showFriends();
 	}
 
 	public void registerSuccessed() {

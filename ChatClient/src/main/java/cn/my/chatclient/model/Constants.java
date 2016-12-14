@@ -17,7 +17,10 @@ public class Constants {
 		REG, // 注册
 		LOGIN, // 登录
 		SENDTOONE, // 发送给某人
-		SNDTOALL// 发送给所有人
+		SNDTOALL,// 发送给所有人
+		
+		ONLINEUSERS,//在线用户
+		
 		;
 
 		/**

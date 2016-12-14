@@ -39,6 +39,13 @@ public class OptionsServiceImpl implements OptionsService {
 
 		send(OPTIONS.REG, user);
 	}
+	
+	@Override
+	public void loadOnlineUsers() {
+
+		// TODO 只查询好友 现查询所有用户
+		send(OPTIONS.ONLINEUSERS, null);
+	}
 
 	@Override
 	public void sendToOne(String from, String to, String msg) {
@@ -56,8 +63,9 @@ public class OptionsServiceImpl implements OptionsService {
 		data.setOption(opt.name());
 		data.setVersion(version);
 
-		data.setContent(RSAUtil.encode(Json.encode(msg), publicKey));
-
+		if(msg != null){
+			data.setContent(RSAUtil.encode(Json.encode(msg), publicKey));
+		}
 		vertxManager.send(data.toJson());
 	}
 

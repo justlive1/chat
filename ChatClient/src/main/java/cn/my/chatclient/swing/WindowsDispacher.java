@@ -1,5 +1,7 @@
 package cn.my.chatclient.swing;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,8 @@ public class WindowsDispacher {
 	@Autowired
 	AlertDialog alert;
 	@Autowired
+	FriendsWindow friends;
+	@Autowired
 	AuthenticationWindow auth;
 	
 	/**
@@ -30,6 +34,14 @@ public class WindowsDispacher {
 		alert.alert(info, callback);
 	}
 	
+	public void showFriends(List<String> users){
+		friends.showAllFriend(users);
+	}
+	
+	public void showFriends(){
+		friends.show();
+	}
+
 	public void showAuth(int type) {
 		switch(type){
 		case 0:

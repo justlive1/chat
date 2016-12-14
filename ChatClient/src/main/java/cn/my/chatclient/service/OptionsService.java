@@ -12,6 +12,8 @@ public interface OptionsService {
 	void login(String name, String password);
 
 	void register(String name, String password);
+	
+	void loadOnlineUsers();
 
 	void sendToOne(String from, String to, String msg);
 }
