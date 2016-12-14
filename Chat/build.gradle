@@ -28,7 +28,8 @@ dependencies {
 	
 	compile group: 'io.vertx', name: 'vertx-core', version: '3.3.3'
 	
-	compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
+	compile group: 'org.redisson', name: 'redisson', version: '3.2.0'
+	
 
 	//jackson
 	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.8.3'
@@ -45,9 +46,6 @@ dependencies {
 	compile group: 'org.springframework', name: 'spring-jdbc', version: spring_version
 	compile group: 'org.springframework', name: 'spring-aspects', version: spring_version
 	compile group: 'org.springframework', name: 'spring-oxm', version: spring_version
-
-	compile group: 'org.springframework.data', name: 'spring-data-redis', version: '1.8.0.M1'
-
 
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '1.4.1.RELEASE'
 

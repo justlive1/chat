@@ -1,9 +1,10 @@
 package cn.my.chat.core;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,7 @@ public class SessionManager {
 	AccountService accountService;
 
 	@Autowired
-	CacheManager cacheManager;
+	CacheManagerForwarding cacheManager;
 	
 	@Autowired
 	VertxManager vertxManager;
@@ -105,6 +106,12 @@ public class SessionManager {
 
 		return user;
 	}
+	
+	public List<String> loadAllOnlineUsers(){
+		
+		return null;
+	}
+	
 	
 	private void closedExistingUser(String handlerId){
 		vertxManager.publish(handlerId+"_closed", ErrorCodes.LOGINONCEMORE);
