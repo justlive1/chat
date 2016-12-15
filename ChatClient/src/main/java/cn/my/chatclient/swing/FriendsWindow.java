@@ -66,7 +66,7 @@ public class FriendsWindow {
 		if (jFrame == null) {
 			jFrame = new JFrame();
 			jFrame.setSize(new Dimension(210, 442));
-			jFrame.setTitle("Talking");
+			jFrame.setTitle("Chat");
 			jFrame.setResizable(false);
 			jFrame.setContentPane(jContentPane());
 			jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -84,6 +84,7 @@ public class FriendsWindow {
 		}
 		return jContentPane;
 	}
+	
 	private JButton getJButtonFind() {
 		if (jButtonFind == null) {
 			jButtonFind = new JButton();
@@ -103,7 +104,7 @@ public class FriendsWindow {
 	private JScrollPane jScrollPane() {
 		if (jScrollPane == null) {
 			jScrollPane = new JScrollPane();
-			jScrollPane.setBounds(new Rectangle(2, 52, 200, 330));
+			jScrollPane.setBounds(new Rectangle(2, 52, 206, 332));
 		}
 		return jScrollPane;
 	}
@@ -115,7 +116,7 @@ public class FriendsWindow {
 		jTree.addMouseListener(new MouseAdapter(){
 			  public void mouseClicked(MouseEvent e){
 				  if(e.getClickCount() == 2){
-					  DefaultMutableTreeNode selectedNode=(DefaultMutableTreeNode)jTree.getLastSelectedPathComponent();
+					  	DefaultMutableTreeNode selectedNode=(DefaultMutableTreeNode)jTree.getLastSelectedPathComponent();
 					  if(!selectedNode.toString().startsWith("好友列表")){
 						  //TOOD
 						  System.out.println(selectedNode);
