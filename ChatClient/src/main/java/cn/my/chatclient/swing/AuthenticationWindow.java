@@ -51,13 +51,13 @@ public class AuthenticationWindow {
 		if (userNameField == null) {
 			userNameField = new JTextField();
 			userNameField.setBounds(new Rectangle(90, 66, 266, 33));
-			// userNameField.addKeyListener(new java.awt.event.KeyAdapter() {
-			// public void keyPressed(java.awt.event.KeyEvent e) {
-			// if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-			// doLogin();
-			// }
-			// }
-			// });
+			userNameField.addKeyListener(new java.awt.event.KeyAdapter() {
+				public void keyPressed(java.awt.event.KeyEvent e) {
+					if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+						passwordField.requestFocus();
+					}
+				}
+			});
 		}
 		return userNameField;
 	}
