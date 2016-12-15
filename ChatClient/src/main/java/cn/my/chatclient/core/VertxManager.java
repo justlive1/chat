@@ -15,7 +15,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetClient;
-import io.vertx.core.net.NetClientOptions;
 import io.vertx.core.net.NetSocket;
 
 @Component
@@ -45,7 +44,7 @@ public class VertxManager {
 			return;
 		}
 
-		softClient = new SoftReference<NetClient>(vertx.createNetClient(new NetClientOptions().setLogActivity(true)));
+		softClient = new SoftReference<NetClient>(vertx.createNetClient());
 		
 		final CountDownLatch latch = new CountDownLatch(1);
 

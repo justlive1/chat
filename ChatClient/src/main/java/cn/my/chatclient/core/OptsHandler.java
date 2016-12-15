@@ -1,6 +1,7 @@
 package cn.my.chatclient.core;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import cn.my.chatclient.model.ServerData;
 import cn.my.chatclient.swing.WindowsDispacher;
 import cn.my.chatclient.util.RSAUtil;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
 
 /**
  * 请求操作处理
@@ -98,8 +100,7 @@ public class OptsHandler {
 		if(content.getContent() != null){
 			
 			String decoedData = RSAUtil.decode(content.getContent(), privateKey);
-			@SuppressWarnings("unchecked")
-			List<String> users = Json.decodeValue(decoedData, List.class);
+			List<String> users = new JsonArray(decoedData).stream().map(String::valueOf).collect(Collectors.toList());
 
 			dispacher.showFriends(users);
 		}
