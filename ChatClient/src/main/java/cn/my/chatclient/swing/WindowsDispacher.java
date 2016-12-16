@@ -9,6 +9,7 @@ import cn.my.chatclient.core.Callback;
 
 /**
  * 窗体控制器
+ * 
  * @author WB
  *
  */
@@ -21,36 +22,39 @@ public class WindowsDispacher {
 	FriendsWindow friends;
 	@Autowired
 	AuthenticationWindow auth;
-	
+
 	/**
 	 * 弹出提示窗口
+	 * 
 	 * @param info
 	 */
-	public void alert(String info){
+	public void alert(String info) {
 		alert.alert(info);
 	}
-	
-	public void alert(String info, Callback callback){
+
+	public void alert(String info, Callback callback) {
 		alert.alert(info, callback);
 	}
-	
-	public void showFriends(List<String> users){
+
+	public void showFriends(List<String> users) {
 		friends.showAllFriend(users);
 	}
-	
-	public void showFriends(){
+
+	public void showFriends() {
 		friends.show();
 	}
 
 	public void showAuth(int type) {
-		switch(type){
+		switch (type) {
 		case 0:
 			auth.loginSuccessed();
 			break;
 		case 1:
 			auth.registerSuccessed();
 			break;
+		default:
+			break;
 		}
 	}
-	
+
 }
