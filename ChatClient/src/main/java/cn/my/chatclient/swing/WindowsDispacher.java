@@ -22,6 +22,9 @@ public class WindowsDispacher {
 	FriendsWindow friends;
 	@Autowired
 	AuthenticationWindow auth;
+	@Autowired
+	PrivateChatWindow privateChat;
+	
 
 	/**
 	 * 弹出提示窗口
@@ -55,6 +58,14 @@ public class WindowsDispacher {
 		default:
 			break;
 		}
+	}
+	
+	public void showPrivateChat(String target){
+		privateChat.show(target);
+	}
+	
+	public void privateChatgMsg(String from, String msg){
+		privateChat.showChatMsg(from, msg);
 	}
 
 }

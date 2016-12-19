@@ -109,7 +109,6 @@ public class OptsHandler {
 	private void handleMsgFromOne(ServerData content) {
 
 		if(content.failed() || content.getContent() == null){
-			// 提示数据接收失败 通常情况不会出现
 			dispacher.alert(content.getMsg());
 			return;
 		}
@@ -117,9 +116,8 @@ public class OptsHandler {
 		
 		String decoedData = RSAUtil.decode(content.getContent(), privateKey);
 		MessageData data = Json.decodeValue(decoedData, MessageData.class);
-		// TODO 显示接收到的信息
-		System.out.println(data);
 		
+		dispacher.privateChatgMsg(data.getFrom(), data.getMsg());
 	}
 	
 }

@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import cn.my.chatclient.exception.CanceledException;
-import cn.my.chatclient.util.Optional;
+import cn.my.chatclient.model.UserLocal;
+import cn.my.chatclient.util.LocalStorage;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -27,8 +28,6 @@ public class VertxManager {
 	@Value("${vertx.server.port:8000}")
 	private int port;
 
-	Optional<String> value = Optional.empty();
-
 	@Autowired
 	Vertx vertx;
 	@Autowired
@@ -38,9 +37,9 @@ public class VertxManager {
 	
 	SoftReference<NetClient> softClient;
 
-	public void client() {
+	public void client(String name) {
 
-		if (value.isWaitingPresent()) {
+		if (LocalStorage.isWaitingPresent()) {
 			return;
 		}
 
@@ -48,7 +47,7 @@ public class VertxManager {
 		
 		final CountDownLatch latch = new CountDownLatch(1);
 
-		value.of(latch);
+		LocalStorage.of(latch);
 
 		softClient.get().connect(port, host, r -> {
 
@@ -56,20 +55,20 @@ public class VertxManager {
 
 				NetSocket socket = r.result();
 
-				value.of(socket.writeHandlerID());
+				LocalStorage.of(new UserLocal(name, socket.writeHandlerID()));
 				latch.countDown();
-
+				
 				socket.handler(connecHandler).exceptionHandler(e -> {
 					// read exception handler
 					logger.error("",e);
 				}).closeHandler(c -> {
 					// do something after connection closed
-					value.clean();
+					LocalStorage.clean();
 				});
 			} else {
 				// handler exceptions
 				logger.error("client connect failed,", r.cause());
-				value.clean();
+				LocalStorage.clean();
 				optHandler.connectFailed();
 			}
 
@@ -78,11 +77,11 @@ public class VertxManager {
 	}
 
 	public void send(String msg) {
-
-		if (value.isWaitingPresent()) {
+		
+		if (LocalStorage.isWaitingPresent()) {
 			String handerId;
 			try {
-				handerId = value.getWaitingUncheck();
+				handerId = LocalStorage.getUncheck().getHandlerId();
 			} catch (CanceledException e) {
 				return;
 			}

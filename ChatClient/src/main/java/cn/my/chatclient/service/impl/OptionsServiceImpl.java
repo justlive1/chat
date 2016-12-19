@@ -29,6 +29,8 @@ public class OptionsServiceImpl implements OptionsService {
 
 		User user = new User(name, password);
 
+		vertxManager.client(name);
+		
 		send(OPTIONS.LOGIN, user);
 	}
 
@@ -37,6 +39,8 @@ public class OptionsServiceImpl implements OptionsService {
 
 		User user = new User(name, password);
 
+		vertxManager.client(name);
+		
 		send(OPTIONS.REG, user);
 	}
 	
@@ -57,8 +61,6 @@ public class OptionsServiceImpl implements OptionsService {
 
 	private <T> void send(OPTIONS opt, T msg) {
 
-		vertxManager.client();
-
 		ClientData data = new ClientData();
 		data.setOption(opt.name());
 		data.setVersion(version);
@@ -68,5 +70,5 @@ public class OptionsServiceImpl implements OptionsService {
 		}
 		vertxManager.send(data.toJson());
 	}
-
+	
 }

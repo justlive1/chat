@@ -25,6 +25,7 @@ import cn.my.chatclient.service.OptionsService;
 
 /**
  * 好友窗口
+ * 
  * @author WB
  *
  */
@@ -33,35 +34,37 @@ public class FriendsWindow {
 
 	private JFrame jFrame;
 	private JPanel jContentPane;
-	private JButton jButtonFind ;
-	private JScrollPane jScrollPane ;
-	private JTree jTree ;
-	private Map<String, DefaultMutableTreeNode> allFriends = new HashMap<>();//所有好友
+	private JButton jButtonFind;
+	private JScrollPane jScrollPane;
+	private JTree jTree;
+	private Map<String, DefaultMutableTreeNode> allFriends = new HashMap<>();// 所有好友
 
 	@Autowired
 	OptionsService optService;
-	
-	public void show(){
+	@Autowired
+	WindowsDispacher dispacher;
+
+	public void show() {
 		optService.loadOnlineUsers();
 		jFrame().setVisible(true);
 	}
 
-	public void showAllFriend(List<String> allFriends){
-		
+	public void showAllFriend(List<String> allFriends) {
+
 		this.allFriends.clear();
-		
+
 		allFriends.forEach(r -> {
 			this.allFriends.put(r, new DefaultMutableTreeNode(r));
 		});
-		
+
 		jScrollPane.setViewportView(jTree(initTree()));
-		jScrollPane.setBackground(new Color(111,11,22,1));
+		jScrollPane.setBackground(new Color(111, 11, 22, 1));
 	}
 
-	public void hide(){
+	public void hide() {
 		jFrame().setVisible(false);
 	}
-	
+
 	private JFrame jFrame() {
 		if (jFrame == null) {
 			jFrame = new JFrame();
@@ -84,7 +87,7 @@ public class FriendsWindow {
 		}
 		return jContentPane;
 	}
-	
+
 	private JButton getJButtonFind() {
 		if (jButtonFind == null) {
 			jButtonFind = new JButton();
@@ -93,7 +96,7 @@ public class FriendsWindow {
 			jButtonFind.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					//TODO
+					// TODO
 					System.out.println(1);
 				}
 			});
@@ -111,31 +114,28 @@ public class FriendsWindow {
 
 	private JTree jTree(DefaultMutableTreeNode nodes) {
 		jTree = new JTree(nodes);
-		jTree.putClientProperty("JTree.lineStyle" , "Angeled");
-		//给当前好友树添加一个双击事件
-		jTree.addMouseListener(new MouseAdapter(){
-			  public void mouseClicked(MouseEvent e){
-				  if(e.getClickCount() == 2){
-					  	DefaultMutableTreeNode selectedNode=(DefaultMutableTreeNode)jTree.getLastSelectedPathComponent();
-					  if(!selectedNode.toString().startsWith("好友列表")){
-						  //TOOD
-						  System.out.println(selectedNode);
-					  }
-				  	}
-				  }
-			});
+		jTree.putClientProperty("JTree.lineStyle", "Angeled");
+		// 给当前好友树添加一个双击事件
+		jTree.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jTree.getLastSelectedPathComponent();
+					if (!selectedNode.toString().startsWith("好友列表")) {
+						dispacher.showPrivateChat(selectedNode.toString());
+					}
+				}
+			}
+		});
 		return jTree;
 	}
 
-
-
-	//初始化好友树的方法
-	public DefaultMutableTreeNode initTree(){
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode ("好友列表("+allFriends.size()+")");
+	// 初始化好友树的方法
+	public DefaultMutableTreeNode initTree() {
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode("好友列表(" + allFriends.size() + ")");
 		if (this.allFriends != null && this.allFriends.size() > 0) {
 			for (Map.Entry<String, DefaultMutableTreeNode> entry : allFriends.entrySet()) {
 				// TODO 不将自己放在好友列表上
-				
+
 				root.add(entry.getValue());
 			}
 		}
