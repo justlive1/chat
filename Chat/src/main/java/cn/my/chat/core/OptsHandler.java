@@ -110,11 +110,11 @@ public class OptsHandler {
 
 		MessageData message = Json.decodeValue(content, MessageData.class);
 
-		UserOnline from = sessionManager.checkOnline(socket.writeHandlerID());
+		UserOnline from = sessionManager.checkOnlineById(socket.writeHandlerID());
 		if (!from.getName().equals(message.getFrom())) {
 			throw Exceptions.fail(ErrorCodes.ILEGALOPTS);
 		}
-		UserOnline to = sessionManager.checkOnline(message.getTo());
+		UserOnline to = sessionManager.checkOnlineByName(message.getTo());
 
 		messageService.send(to.getHandlerId(),OPTIONS.SENDTOONE, new MessageData(from.getName(), to.getName(), message.getMsg()));
 	}

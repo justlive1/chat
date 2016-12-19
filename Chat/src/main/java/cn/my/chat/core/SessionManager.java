@@ -105,12 +105,24 @@ public class SessionManager {
 		}
 	}
 
-	public UserOnline checkOnline(String name) {
+	public UserOnline checkOnlineByName(String name) {
 
 		Cache cache = cacheManager.getCache(CacheMangagerConfig.ONLINES_NAME);
 		UserOnline user;
 
 		if (cache == null || (user = cache.get(name, UserOnline.class)) == null) {
+			throw Exceptions.fail(ErrorCodes.USERNOTONLINE);
+		}
+
+		return user;
+	}
+	
+	public UserOnline checkOnlineById(String id) {
+
+		Cache cache = cacheManager.getCache(CacheMangagerConfig.ONLINES_ID);
+		UserOnline user;
+
+		if (cache == null || (user = cache.get(id, UserOnline.class)) == null) {
 			throw Exceptions.fail(ErrorCodes.USERNOTONLINE);
 		}
 
