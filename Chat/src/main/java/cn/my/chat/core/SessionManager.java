@@ -73,6 +73,7 @@ public class SessionManager {
 		// login to a user which is online
 		UserOnline lastUser;
 		if (exist != null && !(lastUser = (UserOnline) exist.get()).getHandlerId().equals(handlerId)) {
+			nameCache.put(user.getName(), userOnline);
 			closedExistingUser(lastUser.getHandlerId());
 		}
 
@@ -99,8 +100,9 @@ public class SessionManager {
 		}
 
 		Cache nameCache = cacheManager.getCache(CacheMangagerConfig.ONLINES_NAME);
+		user = nameCache.get(user.getName(), UserOnline.class);
 
-		if (handlerId.equals(user.getHandlerId())) {
+		if (user != null && handlerId.equals(user.getHandlerId())) {
 			nameCache.evict(user.getName());
 		}
 	}

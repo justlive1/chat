@@ -96,7 +96,7 @@ public class CacheMangagerConfig {
 		return Redisson.create(config);
 	}
 
-	@Bean(initMethod = "afterPropertiesSet")
+	@Bean
 	@Profile("pro")
 	public CacheManagerForwarding redissonCacheManager(RedissonClient redisson) {
 
