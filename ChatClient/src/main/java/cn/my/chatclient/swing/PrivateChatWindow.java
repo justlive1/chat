@@ -42,13 +42,14 @@ public class PrivateChatWindow {
 
 		chats.get(target).jFrame();
 	}
-	
-	public void showChatMsg(String from, String msg){
-		
+
+	public void showChatMsg(String from, String msg) {
+
 		if (!chats.containsKey(from)) {
 			show(from);
 		}
-		chats.get(from).showMessage(msg);
+		ChatWindow window = chats.get(from);
+		window.showMessage(msg, window.target);
 	}
 
 	class ChatWindow {
@@ -157,13 +158,15 @@ public class PrivateChatWindow {
 			if (msg.length() > 0) {
 				optService.sendToOne(LocalStorage.getUncheck().getName(), target, msg);
 				jTextAreaOut().setText("");
+				showMessage(msg, "我");
 			}
-			
 
 		}
 
-		void showMessage(String message) {
-			this.jTextArea.setText(this.jTextArea.getText() + target + "说:\n   " + message + "\n");
+		void showMessage(String message, String target) {
+			StringBuilder sb = new StringBuilder(this.jTextArea.getText());
+			sb.append(target).append("说:\n   ").append(message).append("\n");
+			this.jTextArea.setText(sb.toString());
 			this.jScrollPane.getVerticalScrollBar().setValue(jScrollPane.getVerticalScrollBar().getMaximum());
 		}
 
