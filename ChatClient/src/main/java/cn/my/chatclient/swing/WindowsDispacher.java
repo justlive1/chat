@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cn.my.chatclient.core.Callback;
+import cn.my.chatclient.util.LocalStorage;
 
 /**
  * 窗体控制器
@@ -24,7 +25,6 @@ public class WindowsDispacher {
 	AuthenticationWindow auth;
 	@Autowired
 	PrivateChatWindow privateChat;
-	
 
 	/**
 	 * 弹出提示窗口
@@ -59,13 +59,25 @@ public class WindowsDispacher {
 			break;
 		}
 	}
-	
-	public void showPrivateChat(String target){
+
+	public void showPrivateChat(String target) {
 		privateChat.show(target);
 	}
-	
-	public void privateChatgMsg(String from, String msg){
+
+	public void privateChatgMsg(String from, String msg) {
 		privateChat.showChatMsg(from, msg);
 	}
 
+	public void friendLoginout(String name, boolean in) {
+
+		if (LocalStorage.getUncheck().getName().equals(name)) {
+			return;
+		}
+
+		if (in) {
+			friends.friendLogin(name);
+			return;
+		}
+		friends.friendLogout(name);
+	}
 }

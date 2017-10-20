@@ -7,9 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,8 @@ public class FriendsWindow {
 	private JButton jButtonFind;
 	private JScrollPane jScrollPane;
 	private JTree jTree;
-	private Map<String, DefaultMutableTreeNode> allFriends = new HashMap<>();// 所有好友
+	private DefaultTreeModel treeModel;
+	private Map<String, DefaultMutableTreeNode> allFriends = new ConcurrentHashMap<>();// 所有好友
 
 	@Autowired
 	OptionsService optService;
@@ -63,6 +65,45 @@ public class FriendsWindow {
 
 	public void hide() {
 		jFrame().setVisible(false);
+	}
+
+	// 初始化好友树的方法
+	public DefaultMutableTreeNode initTree() {
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode("好友列表(" + allFriends.size() + ")");
+		if (this.allFriends != null && this.allFriends.size() > 0) {
+			for (Map.Entry<String, DefaultMutableTreeNode> entry : allFriends.entrySet()) {
+				// TODO 不将自己放在好友列表上
+
+				root.add(entry.getValue());
+			}
+		}
+		return root;
+	}
+
+	// 好友上线
+	public void friendLogin(String name) {
+
+		DefaultMutableTreeNode node = allFriends.get(name);
+		if (node == null) {
+
+			node = new DefaultMutableTreeNode(name);
+			allFriends.put(name, node);
+			DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
+			root.add(node);
+			treeModel.reload();
+		}
+
+	}
+
+	// 好友下线
+	public void friendLogout(String name) {
+
+		DefaultMutableTreeNode node = allFriends.get(name);
+		if (node != null) {
+
+			allFriends.remove(name);
+			treeModel.removeNodeFromParent(node);
+		}
 	}
 
 	private JFrame jFrame() {
@@ -113,7 +154,8 @@ public class FriendsWindow {
 	}
 
 	private JTree jTree(DefaultMutableTreeNode nodes) {
-		jTree = new JTree(nodes);
+		treeModel = new DefaultTreeModel(nodes);
+		jTree = new JTree(treeModel);
 		jTree.putClientProperty("JTree.lineStyle", "Angeled");
 		// 给当前好友树添加一个双击事件
 		jTree.addMouseListener(new MouseAdapter() {
@@ -129,16 +171,4 @@ public class FriendsWindow {
 		return jTree;
 	}
 
-	// 初始化好友树的方法
-	public DefaultMutableTreeNode initTree() {
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode("好友列表(" + allFriends.size() + ")");
-		if (this.allFriends != null && this.allFriends.size() > 0) {
-			for (Map.Entry<String, DefaultMutableTreeNode> entry : allFriends.entrySet()) {
-				// TODO 不将自己放在好友列表上
-
-				root.add(entry.getValue());
-			}
-		}
-		return root;
-	}
 }

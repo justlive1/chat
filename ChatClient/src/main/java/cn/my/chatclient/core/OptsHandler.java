@@ -24,10 +24,10 @@ import io.vertx.core.json.JsonArray;
 
 @Component
 public class OptsHandler {
-	
+
 	@Value("${rsa.server.privateKey}")
 	private String privateKey;
-	
+
 	@Autowired
 	WindowsDispacher dispacher;
 
@@ -54,21 +54,27 @@ public class OptsHandler {
 		case SENDTOONE:
 			handleMsgFromOne(content);
 			break;
+		case FRIENDLOGIN:
+			handleFriendLogin(content);
+			break;
+		case FRIENDLOGOUT:
+			handleFriendLogout(content);
+			break;
 		default:
 			break;
 		}
 
 	}
-	
-	public void connectFailed(){
-		
+
+	public void connectFailed() {
+
 		dispacher.alert("连接服务器失败");
-		
+
 	}
 
 	private void handlerLogin(ServerData content) {
 
-		if(content.failed()){
+		if (content.failed()) {
 			// 提示登陆失败
 			dispacher.alert(content.getMsg());
 			return;
@@ -79,26 +85,26 @@ public class OptsHandler {
 
 	private void handlerRegister(ServerData content) {
 
-		if(content.failed()){
+		if (content.failed()) {
 			// 提示注册失败
 			dispacher.alert(content.getMsg());
 			return;
 		}
-		
+
 		// 登陆
 		dispacher.showAuth(1);
 	}
-	
+
 	private void handlerOnlineUsers(ServerData content) {
-		
-		if(content.failed()){
+
+		if (content.failed()) {
 			// 提示注册失败
 			dispacher.alert(content.getMsg());
 			return;
 		}
-		
-		if(content.getContent() != null){
-			
+
+		if (content.getContent() != null) {
+
 			String decoedData = RSAUtil.decode(content.getContent(), privateKey);
 			List<String> users = new JsonArray(decoedData).stream().map(String::valueOf).collect(Collectors.toList());
 
@@ -108,16 +114,39 @@ public class OptsHandler {
 
 	private void handleMsgFromOne(ServerData content) {
 
-		if(content.failed() || content.getContent() == null){
+		if (content.failed() || content.getContent() == null) {
 			dispacher.alert(content.getMsg());
 			return;
 		}
-		
-		
+
 		String decoedData = RSAUtil.decode(content.getContent(), privateKey);
 		MessageData data = Json.decodeValue(decoedData, MessageData.class);
-		
+
 		dispacher.privateChatgMsg(data.getFrom(), data.getMsg());
 	}
-	
+
+	private void handleFriendLogin(ServerData content) {
+
+		if (content.failed() || content.getContent() == null) {
+			return;
+		}
+
+		String decoedData = RSAUtil.decode(content.getContent(), privateKey);
+		String data = Json.decodeValue(decoedData, String.class);
+
+		dispacher.friendLoginout(data, true);
+	}
+
+	private void handleFriendLogout(ServerData content) {
+
+		if (content.failed() || content.getContent() == null) {
+			return;
+		}
+
+		String decoedData = RSAUtil.decode(content.getContent(), privateKey);
+		String data = Json.decodeValue(decoedData, String.class);
+
+		dispacher.friendLoginout(data, false);
+	}
+
 }

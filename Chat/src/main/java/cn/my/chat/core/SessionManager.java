@@ -18,7 +18,9 @@ import cn.my.chat.exception.ErrorCodes;
 import cn.my.chat.exception.Exceptions;
 import cn.my.chat.model.User;
 import cn.my.chat.model.UserOnline;
+import cn.my.chat.model.Constants.OPTIONS;
 import cn.my.chat.service.AccountService;
+import cn.my.chat.service.MessageService;
 
 /**
  * 用户会话管理
@@ -40,6 +42,9 @@ public class SessionManager {
 
 	@Autowired
 	VertxManager vertxManager;
+
+	@Autowired
+	MessageService messageService;
 
 	/**
 	 * 用户连接成功<br>
@@ -80,6 +85,8 @@ public class SessionManager {
 		// save the cache which key is handler
 		idCache.put(handlerId, userOnline);
 
+		this.notifyOnlineUsersForLogin(user.getName());
+
 		return userOnline;
 	}
 
@@ -105,6 +112,8 @@ public class SessionManager {
 		if (user != null && handlerId.equals(user.getHandlerId())) {
 			nameCache.evict(user.getName());
 		}
+
+		this.notifyOnlineUsersForLogout(user.getName());
 	}
 
 	public UserOnline checkOnlineByName(String name) {
@@ -118,7 +127,7 @@ public class SessionManager {
 
 		return user;
 	}
-	
+
 	public UserOnline checkOnlineById(String id) {
 
 		Cache cache = cacheManager.getCache(CacheMangagerConfig.ONLINES_ID);
@@ -143,6 +152,24 @@ public class SessionManager {
 		logger.warn("断开已登陆的连接,{}", handlerId);
 
 		vertxManager.publish(handlerId + "_closed", ErrorCodes.LOGINONCEMORE);
+	}
+
+	private void notifyOnlineUsersForLogin(String name) {
+
+		Set<?> keys = cacheManager.cacheKeys(CacheMangagerConfig.ONLINES_ID);
+
+		keys.stream().map(String::valueOf).forEach(item -> {
+			messageService.send(item, OPTIONS.FRIENDLOGIN, name);
+		});
+	}
+
+	private void notifyOnlineUsersForLogout(String name) {
+
+		Set<?> keys = cacheManager.cacheKeys(CacheMangagerConfig.ONLINES_ID);
+
+		keys.stream().map(String::valueOf).forEach(item -> {
+			messageService.send(item, OPTIONS.FRIENDLOGOUT, name);
+		});
 	}
 
 }
